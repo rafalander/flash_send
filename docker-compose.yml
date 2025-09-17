@@ -1,0 +1,56 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: flashsend_app
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - flashsend
+
+  web:
+    image: nginx:latest
+    container_name: flashsend_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - flashsend
+
+  db:
+    image: mysql:8.0
+    container_name: flashsend_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: flashsend
+      MYSQL_USER: flashsend
+      MYSQL_PASSWORD: flashsend
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - flashsend
+
+  redis:
+    image: redis:7
+    container_name: flashsend_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - flashsend
+
+volumes:
+  db_data:
+
+networks:
+  flashsend:
+    driver: bridge
