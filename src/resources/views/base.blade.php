@@ -77,7 +77,7 @@
 <body>
 
   <!-- Navbar -->
-  <header class="p-3 text-bg-dark">
+  <header class="p-1 text-bg-dark">
     <div class="container-fluid d-flex align-items-center gap-3">
       <a href="/" class="d-flex align-items-center text-white text-decoration-none">
         <i class="bi bi-envelope fs-3 text-primary me-1"></i>
@@ -86,8 +86,8 @@
 
       <div class="ms-auto d-flex align-items-center gap-2">
         <div class="text-end">
-          <button type="button" class="btn btn-outline-light me-2">Login</button>
-          <button type="button" class="btn btn-warning">Sign-up</button>
+          <button type="button" class="btn btn-outline-light btn-sm me-2">Login</button>
+          <button type="button" class="btn btn-warning btn-sm">Sign-up</button>
         </div>
       </div>
     </div>
