@@ -27,6 +27,10 @@
       border-right: 1px solid rgba(0,0,0,.08);
       position: relative;
       background: #f8f9fa;
+      padding-top: 0.25rem; /* reduzir espaço no topo */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     /* Sidebar expandida */
@@ -65,13 +69,31 @@
       color: #000;
     }
 
-    #menuItems a:hover { background: rgba(0,0,0,.05); border-radius: 4px; }
+    #menuItems a:hover { 
+      background: rgba(0,0,0,.05); 
+      border-radius: 4px; 
+    }
 
-    #menuItems { margin-top: 3rem; }
-    #menuItems.d-none { display: none; }
+    #menuItems { 
+      margin-top: 0.5rem; /* diminuir espaço antes das opções */
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center; /* centraliza verticalmente e horizontalmente */
+      gap: 0.5rem;
+      padding-bottom: 1rem;
+    }
+    #menuItems.d-none {
+      display: none; 
+    }
 
     /* Conteúdo principal */
-    main.content { flex-grow: 1; padding: 1.25rem; }
+    main.content {
+      flex-grow: 1;
+      padding: 1.25rem;
+    }
+
   </style>
 </head>
 <body>
