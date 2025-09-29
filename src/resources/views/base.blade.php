@@ -137,7 +137,7 @@
         </div>
     </div>
   @endcache
-    <!-- Conteúdo principal -->
+    <!-- Conteúdo do menu selecionado -->
     <main class="content">
         @yield('content')
     </main>
