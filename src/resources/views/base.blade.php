@@ -129,11 +129,11 @@
 
         <!-- Menu -->
         <div id="menuItems" class="d-none">
-            <a href="#" title="Menu1"><i class="bi bi-house"></i>Menu1</a>
-            <a href="#" title="Menu2"><i class="bi bi-speedometer2"></i>Menu2</a>
-            <a href="#" title="Menu3"><i class="bi bi-table"></i>Menu3</a>
-            <a href="#" title="Menu4"><i class="bi bi-grid"></i>Menu4</a>
-            <a href="#" title="Menu5"><i class="bi bi-people"></i>Menu5</a>
+            <a href="#" title="home"><i class="bi bi-house"></i>Home</a>
+            <a href="#" title="encomendas"><i class="bi bi-box2-heart"></i>Encomendas</a>
+            <a href="#" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
+            <a href="#" title="torres"><i class="bi bi-building"></i>Torres</a>
+            <a href="#" title="moradores"><i class="bi bi-people"></i>Moradores</a>
         </div>
     </div>
   @endcache
