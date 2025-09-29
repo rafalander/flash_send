@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('encomendas', function (Blueprint $table) {
             $table->id();
+            $table->string('descricao');
+            $table->date('data_recebimento');
+            $table->boolean('retirada')->default(false);
+            $table->string('origem')->nullable();
+            $table->string('codigo_rastreamento')->nullable();
+            $table->foreignId('morador_id')->constrained('moradores')->onDelete('cascade');
             $table->timestamps();
         });
     }
