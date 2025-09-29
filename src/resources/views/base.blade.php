@@ -119,7 +119,7 @@
 <!-- Corpo da página -->
 <div class="page-body">
 
-  @cache('sidebar', 60)  
+  @cache('sidebar', 60)
     <!-- Sidebar -->
     <div id="sidebar" class="vh-100 shadow-sm">
         <!-- Botão da setinha -->
