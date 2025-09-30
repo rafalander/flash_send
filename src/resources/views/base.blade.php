@@ -27,7 +27,7 @@
       border-right: 1px solid rgba(0,0,0,.08);
       position: relative;
       background: #f8f9fa;
-      padding-top: 0.25rem; /* reduzir espaço no topo */
+      padding-top: 0.25rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,11 +36,11 @@
     /* Sidebar expandida */
     #sidebar.expanded { width: 200px; }
 
-    /* Botão fora do sidebar */
+    /* Botão da setinha */
     #toggleSidebar {
       position: absolute;
       top: 1rem;
-      right: -15px; /* deixa fora */
+      right: -15px; /* fica fora do sidebar */
       border-radius: 50%;
       background: white;
       border: 1px solid #ccc;
@@ -69,31 +69,28 @@
       color: #000;
     }
 
-    #menuItems a:hover { 
-      background: rgba(0,0,0,.05); 
-      border-radius: 4px; 
+    #menuItems a:hover {
+      background: rgba(0,0,0,.05);
+      border-radius: 4px;
     }
 
-    #menuItems { 
-      margin-top: 0.5rem; /* diminuir espaço antes das opções */
+    #menuItems {
+      margin-top: 0.5rem;
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center; /* centraliza verticalmente e horizontalmente */
       gap: 0.5rem;
       padding-bottom: 1rem;
     }
-    #menuItems.d-none {
-      display: none; 
-    }
+
+    #menuItems.d-none { display: none; }
 
     /* Conteúdo principal */
     main.content {
       flex-grow: 1;
       padding: 1.25rem;
     }
-
   </style>
 </head>
 <body>
@@ -115,52 +112,81 @@
       </div>
     </div>
   </header>
-@endcache
-<!-- Corpo da página -->
-<div class="page-body">
+  @endcache
 
-  @cache('sidebar', 60)
+  <!-- Corpo da página -->
+  <div class="page-body">
+
+    @cache('sidebar', 60)
     <!-- Sidebar -->
     <div id="sidebar" class="vh-100 shadow-sm">
-        <!-- Botão da setinha -->
-        <button id="toggleSidebar">
-            <i id="toggleIcon" class="bi bi-chevron-right"></i>
-        </button>
+      <!-- Botão da setinha -->
+      <button id="toggleSidebar">
+        <i id="toggleIcon" class="bi bi-chevron-right"></i>
+      </button>
 
-        <!-- Menu -->
-        <div id="menuItems" class="d-none">
-            <a href="{{route ('home') }}" title="home"><i class="bi bi-house"></i>Home</a>
-            <a href="{{route ('encomendas') }}" title="encomendas"><i class="bi bi-box2-heart"></i>Encomendas</a>
-            <a href="{{route ('blocos') }}" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
-            <a href="{{route ('torres') }}" title="torres"><i class="bi bi-building"></i>Torres</a>
-            <a href="{{route ('moradores') }}" title="moradores"><i class="bi bi-people"></i>Moradores</a>
-        </div>
+      <!-- Menu -->
+      <div id="menuItems" class="d-none">
+        <a href="{{route ('home') }}" title="home"><i class="bi bi-house"></i>Home</a>
+        <a href="{{route ('encomendas') }}" title="encomendas"><i class="bi bi-box2-heart"></i>Encomendas</a>
+        <a href="{{route ('blocos') }}" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
+        <a href="{{route ('torres') }}" title="torres"><i class="bi bi-building"></i>Torres</a>
+        <a href="{{route ('moradores') }}" title="moradores"><i class="bi bi-people"></i>Moradores</a>
+      </div>
     </div>
-  @endcache
-    <!-- Conteúdo do menu selecionado -->
+    @endcache
+
+    <!-- Conteúdo -->
     <main class="content">
-        @yield('content')
+      @yield('content')
     </main>
-</div>
+  </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    const toggleBtn = document.getElementById("toggleSidebar");
-    const sidebar = document.getElementById("sidebar");
-    const menuItems = document.getElementById("menuItems");
-    const toggleIcon = document.getElementById("toggleIcon");
+    document.addEventListener("DOMContentLoaded", function () {
+      const KEY = 'sidebarExpanded';
+      const toggleBtn = document.getElementById("toggleSidebar");
+      const sidebar = document.getElementById("sidebar");
+      const menuItems = document.getElementById("menuItems");
+      const toggleIcon = document.getElementById("toggleIcon");
 
-    toggleBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("expanded");
-      menuItems.classList.toggle("d-none");
+      function applySidebarState(expanded, withTransition = true) {
+        if (!withTransition) {
+          sidebar.style.transition = "none";
+        }
 
-      if (sidebar.classList.contains("expanded")) {
-        toggleIcon.classList.replace("bi-chevron-right", "bi-chevron-left");
-      } else {
-        toggleIcon.classList.replace("bi-chevron-left", "bi-chevron-right");
+        if (expanded) {
+          sidebar.classList.add('expanded');
+          menuItems.classList.remove('d-none');
+          toggleIcon.classList.replace('bi-chevron-right', 'bi-chevron-left');
+        } else {
+          sidebar.classList.remove('expanded');
+          menuItems.classList.add('d-none');
+          toggleIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
+        }
+
+        if (!withTransition) {
+          void sidebar.offsetWidth; // força reflow
+          sidebar.style.transition = "";
+        }
       }
+
+      // pega o último estado salvo
+      const saved = localStorage.getItem(KEY);
+      const expanded = saved === "1";
+
+      // aplica sem animação no load
+      applySidebarState(expanded, false);
+
+      // clique no botão
+      toggleBtn.addEventListener("click", () => {
+        const willExpand = !sidebar.classList.contains("expanded");
+        applySidebarState(willExpand, true);
+        localStorage.setItem(KEY, willExpand ? "1" : "0");
+      });
     });
   </script>
 </body>
