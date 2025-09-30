@@ -98,6 +98,7 @@
 </head>
 <body>
 
+  @cache('navbar', 60)
   <!-- Navbar -->
   <header class="p-1 text-bg-dark">
     <div class="container-fluid d-flex align-items-center gap-3">
@@ -114,25 +115,33 @@
       </div>
     </div>
   </header>
+@endcache
+<!-- Corpo da página -->
+<div class="page-body">
 
-  <!-- Corpo da página -->
-  <div class="page-body">
+  @cache('sidebar', 60)
     <!-- Sidebar -->
     <div id="sidebar" class="vh-100 shadow-sm">
-      <!-- Botão da setinha -->
-      <button id="toggleSidebar">
-        <i id="toggleIcon" class="bi bi-chevron-right"></i>
-      </button>
+        <!-- Botão da setinha -->
+        <button id="toggleSidebar">
+            <i id="toggleIcon" class="bi bi-chevron-right"></i>
+        </button>
 
-      <!-- Menu -->
-      <div id="menuItems" class="d-none">
-        <a href="#" title="Menu1"><i class="bi bi-house"></i>Menu1</a>
-        <a href="#" title="Menu2"><i class="bi bi-speedometer2"></i>Menu2</a>
-        <a href="#" title="Menu3"><i class="bi bi-table"></i>Menu3</a>
-        <a href="#" title="Menu4"><i class="bi bi-grid"></i>Menu4</a>
-        <a href="#" title="Menu5"><i class="bi bi-people"></i>Menu5</a>
-      </div>
+        <!-- Menu -->
+        <div id="menuItems" class="d-none">
+            <a href="{{route ('home') }}" title="home"><i class="bi bi-house"></i>Home</a>
+            <a href="{{route ('encomendas') }}" title="encomendas"><i class="bi bi-box2-heart"></i>Encomendas</a>
+            <a href="{{route ('blocos') }}" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
+            <a href="{{route ('torres') }}" title="torres"><i class="bi bi-building"></i>Torres</a>
+            <a href="{{route ('moradores') }}" title="moradores"><i class="bi bi-people"></i>Moradores</a>
+        </div>
     </div>
+  @endcache
+    <!-- Conteúdo do menu selecionado -->
+    <main class="content">
+        @yield('content')
+    </main>
+</div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
