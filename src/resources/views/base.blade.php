@@ -106,8 +106,7 @@
 
       <div class="ms-auto d-flex align-items-center gap-2">
         <div class="text-end">
-          <button type="button" class="btn btn-outline-light btn-sm me-2">Login</button>
-          <button type="button" class="btn btn-warning btn-sm">Sign-up</button>
+       {{-- Mantendo a div porque provavelmente vou colocar alguma feature no lugar --}}
         </div>
       </div>
     </div>
