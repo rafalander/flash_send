@@ -91,6 +91,12 @@
       flex-grow: 1;
       padding: 1.25rem;
     }
+    .logo {
+      height: 35px;
+      width: 35px;
+      object-fit: contain;
+      margin-right: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -100,7 +106,7 @@
   <header class="p-1 text-bg-dark">
     <div class="container-fluid d-flex align-items-center gap-3">
       <a href="/" class="d-flex align-items-center text-white text-decoration-none">
-        <i class="bi bi-envelope fs-3 text-primary me-1"></i>
+        <img src="{{ asset('images/icons/logo.png') }}" alt="Logo" class="logo">
         <strong class="d-none d-md-inline">Flash Send</strong>
       </a>
 
