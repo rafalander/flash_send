@@ -97,6 +97,11 @@
       object-fit: contain;
       margin-right: 0.5rem;
     }
+
+    footer {
+      border-top: 1px solid rgba(0,0,0,.08);
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -146,6 +151,13 @@
       @yield('content')
     </main>
   </div>
+
+  <footer class="p-1 text-bg-light mt-auto">
+    <div class="p-2 text-center" style="font-size: 0.75rem; color: hsl(60, 1%, 41%);">
+      &copy; {{ date('Y') }} Flash Send
+      </a>
+    </div>
+  </footer>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
