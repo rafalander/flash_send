@@ -91,6 +91,17 @@
       flex-grow: 1;
       padding: 1.25rem;
     }
+    .logo {
+      height: 35px;
+      width: 35px;
+      object-fit: contain;
+      margin-right: 0.5rem;
+    }
+
+    footer {
+      border-top: 1px solid rgba(0,0,0,.08);
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -100,14 +111,13 @@
   <header class="p-1 text-bg-dark">
     <div class="container-fluid d-flex align-items-center gap-3">
       <a href="/" class="d-flex align-items-center text-white text-decoration-none">
-        <i class="bi bi-envelope fs-3 text-primary me-1"></i>
+        <img src="{{ asset('images/icons/logo.png') }}" alt="Logo" class="logo">
         <strong class="d-none d-md-inline">Flash Send</strong>
       </a>
 
       <div class="ms-auto d-flex align-items-center gap-2">
         <div class="text-end">
-          <button type="button" class="btn btn-outline-light btn-sm me-2">Login</button>
-          <button type="button" class="btn btn-warning btn-sm">Sign-up</button>
+       {{-- Mantendo a div porque provavelmente vou colocar alguma feature no lugar --}}
         </div>
       </div>
     </div>
@@ -129,7 +139,7 @@
       <div id="menuItems" class="d-none">
         <a href="{{route ('home') }}" title="home"><i class="bi bi-house"></i>Home</a>
         <a href="{{route ('encomendas') }}" title="encomendas"><i class="bi bi-box2-heart"></i>Encomendas</a>
-        <a href="{{route ('blocos') }}" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
+        <a href="{{route ('blocos.index') }}" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
         <a href="{{route ('torres') }}" title="torres"><i class="bi bi-building"></i>Torres</a>
         <a href="{{route ('moradores') }}" title="moradores"><i class="bi bi-people"></i>Moradores</a>
       </div>
@@ -141,6 +151,13 @@
       @yield('content')
     </main>
   </div>
+
+  <footer class="p-1 text-bg-light mt-auto">
+    <div class="p-2 text-center" style="font-size: 0.75rem; color: hsl(60, 1%, 41%);">
+      &copy; {{ date('Y') }} Flash Send
+      </a>
+    </div>
+  </footer>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
