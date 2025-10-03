@@ -56,7 +56,7 @@ class BlocosController extends Controller
         $bloco = Bloco::find($id);
         if ($bloco) {
             $bloco->delete();
-            return redirect()->back()->with('success', 'Bloco deletado com sucesso.');
+            return redirect()->back()->with('info', 'Bloco deletado com sucesso.');
         } else {
                 return redirect()->route('blocos.index')->with('error', 'Bloco não encontrado.');
         }    
