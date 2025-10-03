@@ -8,8 +8,11 @@ services:
     volumes:
       - ./src:/var/www/html
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      - TZ=America/Sao_Paulo
     networks:
       - flashsend
+
 
   web:
     image: nginx:latest
