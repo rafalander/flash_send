@@ -11,6 +11,7 @@ Route::view('/encomendas', 'encomendas')->name('encomendas');
 
 Route::prefix('blocos')->group(function () {
     Route::get('/', [BlocosController::class, 'index'])->name('blocos.index');
+    Route::get('/create', [BlocosController::class , 'blocosCreate'])->name('blocos.create');
     Route::post('/create', [BlocosController::class , 'blocosCreate'])->name('blocos.create');
     Route::put('/{id}/edit', [BlocosController::class, 'blocosEdit'])->name('blocos.edit');
     Route::delete('/{id}', [BlocosController::class, 'blocosDelete'])->name('blocos.delete');
