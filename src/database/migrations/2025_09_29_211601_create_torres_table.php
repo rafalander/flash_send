@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('torres', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->string('nome');
             $table->foreignId('bloco_id')->constrained('blocos')->onDelete('cascade');
             $table->timestamps();

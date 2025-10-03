@@ -134,7 +134,7 @@
       <div id="menuItems" class="d-none">
         <a href="{{route ('home') }}" title="home"><i class="bi bi-house"></i>Home</a>
         <a href="{{route ('encomendas') }}" title="encomendas"><i class="bi bi-box2-heart"></i>Encomendas</a>
-        <a href="{{route ('blocos') }}" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
+        <a href="{{route ('blocos.index') }}" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
         <a href="{{route ('torres') }}" title="torres"><i class="bi bi-building"></i>Torres</a>
         <a href="{{route ('moradores') }}" title="moradores"><i class="bi bi-people"></i>Moradores</a>
       </div>
