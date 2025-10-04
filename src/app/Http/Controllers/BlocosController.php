@@ -24,7 +24,10 @@ class BlocosController extends Controller
                 'nome' => $request->input('nome'),
             ]);
 
-            return redirect()->route('blocos.index')->with('success', 'Bloco criado com sucesso.');
+            return redirect()
+                ->route('blocos.index')
+                ->with('flasher', toastr()
+                ->success('Bloco criado com sucesso'));
         }
 
         return view('blocosCreate');
@@ -34,7 +37,10 @@ class BlocosController extends Controller
     {
         $bloco = Bloco::find($id);
         if (!$bloco) {
-            return redirect()->route('blocos.index')->with('error', 'Bloco não encontrado.');
+            return redirect()
+                ->route('blocos.index')
+                ->with('flasher', toastr()
+                ->error('Bloco não encontrado.'));
         }
 
         if ($request->isMethod('PUT')) {
@@ -46,7 +52,10 @@ class BlocosController extends Controller
                 'nome' => $request->input('nome'),
             ]);
 
-            return redirect()->route('blocos.index')->with('success', 'Bloco atualizado com sucesso.');
+            return redirect()
+                ->route('blocos.index')
+                ->with('flasher', toastr()
+                ->success('Atualizado com sucesso'));
         }
 
         return view('blocosEdit', compact('bloco'));
@@ -56,9 +65,15 @@ class BlocosController extends Controller
         $bloco = Bloco::find($id);
         if ($bloco) {
             $bloco->delete();
-            return redirect()->back()->with('info', 'Bloco deletado com sucesso.');
+            return redirect()
+                ->back()
+                ->with('flasher', toastr()
+                ->info('Bloco excluído com sucesso'));
         } else {
-                return redirect()->route('blocos.index')->with('error', 'Bloco não encontrado.');
+            return redirect()
+                ->route('blocos.index')
+                ->with('flasher', toastr()
+                ->error('Bloco não encontrado.'));
         }    
         return view('blocos.index');
     }
