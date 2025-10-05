@@ -14,19 +14,27 @@
                                 @method('PUT')
                                 <h5 class="card-title">
                                     <span class="text-display" id="name-display-{{ $bloco->id }}">{{ $bloco->nome }}</span>
-                                    <input type="text" name="nome" value="{{ $bloco->nome }}" class="form-control d-none" id="name-input-{{ $bloco->id }}">
+                                    <input type="text" name="nome" value="{{ $bloco->nome }}" class="form-control d-none w-50" id="name-input-{{ $bloco->id }}">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-info btn-sm bi bi-pencil-square shadow-sm"
+                                    id="edit-btn-{{ $bloco->id }}"
+                                    onclick="enableEdit({{ $bloco->id }})"
+                                ></button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-danger btn-sm bi bi-x m-1 shadow-sm d-none"
+                                    id="cancel-btn-{{ $bloco->id }}"
+                                    onclick="cancelEdit({{ $bloco->id }})"
+                                    title="Cancelar edição"
+                                ></button>
+
                                 </h5>
                                 <p class="card-text">Torres: {{ $bloco->qtdTorres ?? '0' }}</p>
                                 <p class="card-text">Apartamentos: {{ $bloco->qtdApartamentos ?? '0' }}</p>
                                 <p class="card-text">{{ $bloco->descricao }}</p>
-
-                                <!-- Botão de editar / salvar -->
-                                <button
-                                    type="button"
-                                    class="btn btn-secondary btn-sm bi bi-pencil-square"
-                                    id="edit-btn-{{ $bloco->id }}"
-                                    onclick="enableEdit({{ $bloco->id }})"
-                                ></button>
                             </form>
 
                             <!-- Form de deletar separado -->
@@ -37,7 +45,7 @@
                             >
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm bi bi-trash"></button>
+                                <button type="submit" class="btn btn-danger btn-sm w-25 bi bi-trash"></button>
                             </form>
                     </div>
                 </div>
@@ -50,17 +58,52 @@
     function enableEdit(id) {
         const input = document.getElementById(`name-input-${id}`);
         const display = document.getElementById(`name-display-${id}`);
-        const btn = document.getElementById(`edit-btn-${id}`);
+        const editBtn = document.getElementById(`edit-btn-${id}`);
+        const cancelBtn = document.getElementById(`cancel-btn-${id}`);
         const form = document.getElementById(`form-${id}`);
 
-        // Mostrar input e esconder texto
         input.classList.remove('d-none');
         display.classList.add('d-none');
 
-        // Trocar ícone do botão para check e mudar ação
-        btn.classList.remove('bi-pencil-square');
-        btn.classList.add('btn-success', 'bi-check-lg');
-        btn.onclick = function() { form.submit(); };
+        editBtn.classList.remove('btn-info', 'bi-pencil-square');
+        editBtn.classList.add('btn-success', 'bi-check-lg');
+
+        editBtn.onclick = function() { form.submit(); };
+
+        cancelBtn.classList.remove('d-none');
+
+        input.focus();
+        input.select();
+
+        input.onkeydown = function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                form.submit();
+            } else if (e.key === 'Escape') {
+                cancelEdit(id);
+            }
+        };
+    }
+
+    function cancelEdit(id) {
+        const input = document.getElementById(`name-input-${id}`);
+        const display = document.getElementById(`name-display-${id}`);
+        const editBtn = document.getElementById(`edit-btn-${id}`);
+        const cancelBtn = document.getElementById(`cancel-btn-${id}`);
+
+        input.value = display.textContent.trim();
+
+        input.classList.add('d-none');
+        display.classList.remove('d-none');
+
+        editBtn.classList.remove('btn-success', 'bi-check-lg');
+        editBtn.classList.add('btn-info', 'bi-pencil-square');
+
+        editBtn.onclick = function() { enableEdit(id); };
+
+        cancelBtn.classList.add('d-none');
+
+        input.onkeydown = null;
     }
 </script>
 @endsection
