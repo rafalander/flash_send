@@ -42,6 +42,7 @@
                                 action="{{ route('blocos.delete', $bloco->id) }}"
                                 method="POST"
                                 class="d-inline"
+                                onsubmit="return confirm('Tem certeza que deseja deletar este bloco?')"
                             >
                                 @csrf
                                 @method('DELETE')
