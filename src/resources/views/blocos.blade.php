@@ -33,8 +33,6 @@
 
                                 </h5>
                                 <p class="card-text">Torres: {{ $bloco->qtdTorres ?? '0' }}</p>
-                                <p class="card-text">Apartamentos: {{ $bloco->qtdApartamentos ?? '0' }}</p>
-                                <p class="card-text">{{ $bloco->descricao }}</p>
                             </form>
 
                             <!-- Form de deletar separado -->
@@ -46,7 +44,7 @@
                             >
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm w-25 bi bi-trash"></button>
+                                <button type="submit" class="btn btn-danger btn-sm mt-3 bi bi-trash"></button>
                             </form>
                     </div>
                 </div>
