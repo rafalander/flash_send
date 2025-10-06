@@ -20,6 +20,15 @@ class BlocosController extends Controller
                 'nome' => 'required|string|max:255',
             ]);
 
+        $existe = Bloco::where('nome', $request->input('nome'))->exists();
+
+        if ($existe) {
+            return redirect()
+                ->back()
+                ->with('flasher', toastr()
+                ->warning('Já existe um bloco com esse nome'));
+        }
+
             Bloco::create([
                 'nome' => $request->input('nome'),
             ]);
