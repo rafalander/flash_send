@@ -2,7 +2,7 @@
 @section('content')
     <div class="container">
         <h2 class="mb-4">Cadastro de blocos</h2>
-        <form action="{{ route('blocos.create') }}" method="POST">
+        <form action="{{ route('blocos.store') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome do Bloco</label>
