@@ -10,7 +10,7 @@ class TorresController extends Controller
 {
     public function index()
     {
-        $torres = Torre::all();
+        $torres = Torre::with('bloco')->get();
         return view('torres', compact('torres'));
     }
 

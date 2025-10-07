@@ -5,48 +5,59 @@
 
   <a href="{{ route('torres.create') }}" class="btn btn-primary mb-3">Nova Torre</a>
 
-  <ul class="list-group">
-    @foreach($torres as $torre)
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-          <form id="form-{{ $torre->id }}" action="{{ route('torres.edit', $torre->id) }}" method="POST" class="d-inline">
-            @csrf
-            @method('PUT')
-            <span class="text-display me-2" id="name-display-{{ $torre->id }}">{{ $torre->nome }}</span>
-            <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control d-none w-100 me-2" id="name-input-{{ $torre->id }}">
-          </form>
-        </div>
+  <table class="table table-striped table-bordered">
+    <thead class="table-light">
+      <tr>
+        <th>Nome</th>
+        <th>Nome do bloco</th>
+        <th style="width: 150px;" class="text-center">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($torres as $torre)
+        <tr>
+          <td>
+            <form id="form-{{ $torre->id }}" action="{{ route('torres.edit', $torre->id) }}" method="POST" class="d-inline">
+              @csrf
+              @method('PUT')
+              <span class="text-display" id="name-display-{{ $torre->id }}">{{ $torre->nome }}</span>
+              <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control d-none" id="name-input-{{ $torre->id }}">
+            </form>
+          </td>
+          <td>{{ $torre->bloco->nome ?? 'N/A' }}</td>
+          <td class="text-center">
+            <div class="d-flex justify-content-center align-items-center">
+              <button
+                type="button"
+                class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm me-1"
+                id="edit-btn-{{ $torre->id }}"
+                onclick="enableEdit({{ $torre->id }})"
+              ></button>
 
-        <div class="d-flex align-items-center">
-          <button
-            type="button"
-            class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm me-1"
-            id="edit-btn-{{ $torre->id }}"
-            onclick="enableEdit({{ $torre->id }})"
-          ></button>
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm bi bi-x m-1 shadow-sm d-none"
+                id="cancel-btn-{{ $torre->id }}"
+                onclick="cancelEdit({{ $torre->id }})"
+                title="Cancelar edição"
+              ></button>
 
-          <button
-            type="button"
-            class="btn btn-secondary btn-sm bi bi-x m-1 shadow-sm d-none"
-            id="cancel-btn-{{ $torre->id }}"
-            onclick="cancelEdit({{ $torre->id }})"
-            title="Cancelar edição"
-          ></button>
-
-          <form
-            action="{{ route('torres.delete', $torre->id) }}"
-            method="POST"
-            class="d-inline ms-2"
-            onsubmit="return confirm('Tem certeza que deseja deletar esta torre?')"
-          >
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger btn-sm bi bi-trash"></button>
-          </form>
-        </div>
-      </li>
-    @endforeach
-  </ul>
+              <form
+                action="{{ route('torres.delete', $torre->id) }}"
+                method="POST"
+                class="d-inline ms-2"
+                onsubmit="return confirm('Tem certeza que deseja deletar esta torre?')"
+              >
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger btn-sm bi bi-trash"></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      @endforeach
+    </tbody>
+  </table>
 
   <script>
     function enableEdit(id) {
