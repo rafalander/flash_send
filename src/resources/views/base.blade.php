@@ -106,7 +106,6 @@
 </head>
 <body>
 
-  @cache('navbar', 60)
   <!-- Navbar -->
   <header class="p-1 text-bg-dark">
     <div class="container-fluid d-flex align-items-center gap-3">
@@ -122,12 +121,9 @@
       </div>
     </div>
   </header>
-  @endcache
-
   <!-- Corpo da página -->
   <div class="page-body">
 
-    @cache('sidebar', 60)
     <!-- Sidebar -->
     <div id="sidebar" class="vh-100 shadow-sm">
       <!-- Botão da setinha -->
@@ -144,7 +140,6 @@
         <a href="{{route ('moradores') }}" title="moradores"><i class="bi bi-people"></i>Moradores</a>
       </div>
     </div>
-    @endcache
 
     <!-- Conteúdo -->
     <main class="content">
