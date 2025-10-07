@@ -103,6 +103,24 @@
       border-top: 1px solid rgba(0,0,0,.08);
       position: relative;
     }
+
+    /* Custom input styling with subtle box-shadow */
+    .form-control, .form-select {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.2s ease-in-out;
+    }
+
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .form-control.is-invalid, .form-select.is-invalid {
+      box-shadow: 0 1px 3px rgba(220, 53, 69, 0.15);
+    }
+
+    .form-control.is-invalid:focus, .form-select.is-invalid:focus {
+      box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2), 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
   </style>
 </head>
 <body>

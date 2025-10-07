@@ -9,7 +9,7 @@
             <form action="{{ route('torres.store') }}" method="POST" novalidate>
                 @csrf
 
-                <div class="mb-3">
+                <div class="mb-3 w-50">
                     <label for="nome" class="form-label">Nome da Torre</label>
                     <input
                         type="text"
@@ -26,7 +26,7 @@
                     @enderror
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3 w-50">
                     <label for="bloco_id" class="form-label">Bloco</label>
                     <select
                         name="bloco_id"
