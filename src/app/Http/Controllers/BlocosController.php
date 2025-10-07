@@ -9,7 +9,7 @@ class BlocosController extends Controller
 {
     public function index()
     {
-        $blocos = Bloco::all();
+    $blocos = Bloco::withCount(['torres as qtdTorres'])->get();
         return view('blocos', compact('blocos'));
     }
 
