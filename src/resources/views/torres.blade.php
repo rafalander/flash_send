@@ -13,7 +13,7 @@
             @csrf
             @method('PUT')
             <span class="text-display me-2" id="name-display-{{ $torre->id }}">{{ $torre->nome }}</span>
-            <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control d-none w-50 me-2" id="name-input-{{ $torre->id }}">
+            <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control d-none w-100 me-2" id="name-input-{{ $torre->id }}">
           </form>
         </div>
 
@@ -97,7 +97,6 @@
       input.classList.add('d-none');
       display.classList.remove('d-none');
 
-      // restore edit button to pencil look
       editBtn.classList.remove('btn-success', 'bi-check-lg');
       editBtn.classList.add('btn-warning', 'bi-pencil-square');
 
