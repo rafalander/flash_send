@@ -15,7 +15,7 @@
             <span class="text-display me-2" id="name-display-{{ $torre->id }}">{{ $torre->nome }}</span>
             <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control d-none w-100 me-2" id="name-input-{{ $torre->id }}">
           </form>
-          <span class="text-muted small ms-3">Bloco: {{ $torre->bloco->nome ?? 'N/A' }}</span>
+          <span class="text-muted small ms-3">{{ $torre->bloco->nome ?? 'N/A' }}</span>
         </div>
 
         <div class="d-flex align-items-center">
@@ -62,11 +62,9 @@
       input.classList.remove('d-none');
       display.classList.add('d-none');
 
-      // change edit btn to submit/check
       editBtn.classList.remove('btn-warning', 'bi-pencil-square');
       editBtn.classList.add('btn-success', 'bi-check-lg');
 
-      // when clicked now, submit the related form
       editBtn.onclick = function() { form.submit(); };
 
       cancelBtn.classList.remove('d-none');
