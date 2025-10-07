@@ -103,6 +103,9 @@
       border-top: 1px solid rgba(0,0,0,.08);
       position: relative;
     }
+  .form-control:focus {
+    box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.25);
+  }
   </style>
 </head>
 <body>
