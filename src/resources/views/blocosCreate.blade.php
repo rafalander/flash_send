@@ -1,7 +1,7 @@
 @extends('base')
 @section('content')
 <div class="container mt-4">
-    <div class="card">
+    <div class="card col-md-8 mx-auto">
         <div class="card-header">
             <h5 class="mb-0">Cadastro de Bloco</h5>
         </div>
