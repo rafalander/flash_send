@@ -46,6 +46,9 @@
                     </select>
                     @error('bloco_id')
                         <div class="invalid-feedback">{{ $message }}</div>
+                        @php
+                            dd($message);
+                        @endphp
                     @enderror
                     @if($blocos->isEmpty())
                         <div class="alert alert-warning mt-2" role="alert">

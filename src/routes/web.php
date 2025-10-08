@@ -29,3 +29,5 @@ Route::prefix('torres')->group(function () {
 });
 
 Route::view('/moradores', 'moradores')->name('moradores');
+
+Route::view('/apartamentos', 'apartamentos')->name('apartamentos.index');
