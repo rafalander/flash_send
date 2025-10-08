@@ -13,6 +13,11 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
+    header {
+      height: 45px;
+      display: flex;
+      align-items: center;
+    }
     body {
       min-height: 100vh;
       overflow-x: hidden;
@@ -93,10 +98,14 @@
       padding: 1.25rem;
     }
     .logo {
-      height: 35px;
-      width: 35px;
+      height: 25px;
       object-fit: contain;
       margin-right: 0.5rem;
+    }
+
+    .nameLogo {
+      font-size: 1.25rem;
+      font-weight: bold;
     }
 
     footer {
@@ -115,7 +124,7 @@
     <div class="container-fluid d-flex align-items-center gap-3">
       <a href="/" class="d-flex align-items-center text-white text-decoration-none">
         <img src="{{ asset('images/icons/logo.png') }}" alt="Logo" class="logo">
-        <strong class="d-none d-md-inline">Flash Send</strong>
+        <strong class="d-none d-md-inline nameLogo">Flash Send</strong>
       </a>
 
       <div class="ms-auto d-flex align-items-center gap-2">
