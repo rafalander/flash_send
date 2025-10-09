@@ -8,14 +8,25 @@
   <ul class="list-group">
     @foreach($torres as $torre)
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center flex-grow-1">
-          <form id="form-{{ $torre->id }}" action="{{ route('torres.edit', $torre->id) }}" method="POST" class="d-inline">
+        <div class="d-flex align-items-center flex-grow-1 gap-2">
+          <form id="form-{{ $torre->id }}" action="{{ route('torres.edit', $torre->id) }}" method="POST" class="d-flex align-items-center flex-grow-1 gap-2">
             @csrf
             @method('PUT')
             <span class="text-display me-2" id="name-display-{{ $torre->id }}">{{ $torre->nome }}</span>
-            <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control d-none w-100 me-2" id="name-input-{{ $torre->id }}">
+            <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control d-none w-auto me-2" id="name-input-{{ $torre->id }}">
+            
+            <span class="text-muted small" id="bloco-display-{{ $torre->id }}">{{ $torre->bloco->nome ?? 'N/A' }}</span>
+            <select name="bloco_id" id="bloco-input-{{ $torre->id }}" class="form-select form-select-sm d-none w-auto">
+              <option value="">Selecione um bloco</option>
+              @isset($blocos)
+                @foreach($blocos as $bloco)
+                  <option value="{{ $bloco->id }}" {{ (string)$torre->bloco_id === (string)$bloco->id ? 'selected' : '' }}>
+                    {{ $bloco->nome ?? "Bloco #{$bloco->id}" }}
+                  </option>
+                @endforeach
+              @endisset
+            </select>
           </form>
-          <span class="text-muted small ms-3">{{ $torre->bloco->nome ?? 'N/A' }}</span>
         </div>
 
         <div class="d-flex align-items-center">
@@ -53,6 +64,8 @@
     function enableEdit(id) {
       const input = document.getElementById(`name-input-${id}`);
       const display = document.getElementById(`name-display-${id}`);
+      const blocoDisplay = document.getElementById(`bloco-display-${id}`);
+      const blocoInput = document.getElementById(`bloco-input-${id}`);
       const editBtn = document.getElementById(`edit-btn-${id}`);
       const cancelBtn = document.getElementById(`cancel-btn-${id}`);
       const form = document.getElementById(`form-${id}`);
@@ -61,6 +74,10 @@
 
       input.classList.remove('d-none');
       display.classList.add('d-none');
+      if (blocoDisplay && blocoInput) {
+        blocoDisplay.classList.add('d-none');
+        blocoInput.classList.remove('d-none');
+      }
 
       editBtn.classList.remove('btn-warning', 'bi-pencil-square');
       editBtn.classList.add('btn-success', 'bi-check-lg');
@@ -85,6 +102,8 @@
     function cancelEdit(id) {
       const input = document.getElementById(`name-input-${id}`);
       const display = document.getElementById(`name-display-${id}`);
+      const blocoDisplay = document.getElementById(`bloco-display-${id}`);
+      const blocoInput = document.getElementById(`bloco-input-${id}`);
       const editBtn = document.getElementById(`edit-btn-${id}`);
       const cancelBtn = document.getElementById(`cancel-btn-${id}`);
       const form = document.getElementById(`form-${id}`);
@@ -95,6 +114,10 @@
 
       input.classList.add('d-none');
       display.classList.remove('d-none');
+      if (blocoDisplay && blocoInput) {
+        blocoInput.classList.add('d-none');
+        blocoDisplay.classList.remove('d-none');
+      }
 
       editBtn.classList.remove('btn-success', 'bi-check-lg');
       editBtn.classList.add('btn-warning', 'bi-pencil-square');
