@@ -28,7 +28,7 @@
     /* Sidebar base */
     #sidebar {
       width: 60px;
-      transition: width 0.3s;
+      transition: width 0.35s ease-in-out;
       height: calc(100vh - 68px);
       border-right: 1px solid rgba(0,0,0,.08);
       position: relative;
@@ -73,6 +73,9 @@
       padding: 0.5rem 0.75rem;
       text-decoration: none;
       color: #000;
+      width: 100%;
+      justify-content: flex-start;
+      transition: gap 0.25s ease, padding 0.25s ease;
     }
 
     #menuItems a:hover {
@@ -90,7 +93,37 @@
       padding-bottom: 1rem;
     }
 
-    #menuItems.d-none { display: none; }
+    /* Tamanho/alinhamento dos ícones */
+    #menuItems a i {
+      font-size: 1.15rem;
+      width: 1.5rem;
+      text-align: center;
+    }
+
+    /* Texto do menu com animação suave */
+    #menuItems a .label {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 140px; /* espaço para o texto quando expandido */
+      opacity: 1;
+      transition: max-width 0.35s ease-in-out, opacity 0.25s ease-in-out 0.05s;
+    }
+
+    /* Sidebar colapsada: mostra só ícones */
+    #sidebar:not(.expanded) #menuItems a {
+      justify-content: center;
+      gap: 0;
+    }
+    #sidebar:not(.expanded) #menuItems a .label {
+      max-width: 0;
+      opacity: 0;
+    }
+
+    /* Sidebar expandida: centraliza itens também */
+    #sidebar.expanded #menuItems a {
+      justify-content: center;
+    }
 
     /* Conteúdo principal */
     main.content {
@@ -145,13 +178,25 @@
       </button>
 
       <!-- Menu -->
-      <div id="menuItems" class="d-none">
-        <a href="{{route ('home') }}" title="home"><i class="bi bi-house"></i>Home</a>
-        <a href="{{route ('encomendas') }}" title="encomendas"><i class="bi bi-box2-heart"></i>Encomendas</a>
-        <a href="{{route ('blocos.index') }}" title="blocos"><i class="bi bi-columns"></i>Blocos</a>
-        <a href="{{route ('torres.index') }}" title="torres"><i class="bi bi-building"></i>Torres</a>
-        <a href="{{route ('apartamentos.index') }}" title="apartamentos"><i class="bi bi-door-open"></i>Apartamentos</a>
-        <a href="{{route ('moradores') }}" title="moradores"><i class="bi bi-people"></i>Moradores</a>
+      <div id="menuItems">
+        <a href="{{ route('home') }}" title="Home">
+          <i class="bi bi-house"></i><span class="label">Home</span>
+        </a>
+        <a href="{{ route('encomendas') }}" title="Encomendas">
+          <i class="bi bi-box2-heart"></i><span class="label">Encomendas</span>
+        </a>
+        <a href="{{ route('blocos.index') }}" title="Blocos">
+          <i class="bi bi-columns"></i><span class="label">Blocos</span>
+        </a>
+        <a href="{{ route('torres.index') }}" title="Torres">
+          <i class="bi bi-building"></i><span class="label">Torres</span>
+        </a>
+        <a href="{{ route('apartamentos.index') }}" title="Apartamentos">
+          <i class="bi bi-door-open"></i><span class="label">Apartamentos</span>
+        </a>
+        <a href="{{ route('moradores') }}" title="Moradores">
+          <i class="bi bi-people"></i><span class="label">Moradores</span>
+        </a>
       </div>
     </div>
 
@@ -176,7 +221,6 @@
       const KEY = 'sidebarExpanded';
       const toggleBtn = document.getElementById("toggleSidebar");
       const sidebar = document.getElementById("sidebar");
-      const menuItems = document.getElementById("menuItems");
       const toggleIcon = document.getElementById("toggleIcon");
 
       function applySidebarState(expanded, withTransition = true) {
@@ -186,11 +230,9 @@
 
         if (expanded) {
           sidebar.classList.add('expanded');
-          menuItems.classList.remove('d-none');
           toggleIcon.classList.replace('bi-chevron-right', 'bi-chevron-left');
         } else {
           sidebar.classList.remove('expanded');
-          menuItems.classList.add('d-none');
           toggleIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
         }
 
