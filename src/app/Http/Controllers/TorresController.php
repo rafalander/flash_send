@@ -11,7 +11,8 @@ class TorresController extends Controller
     public function index()
     {
         $torres = Torre::with('bloco')->get();
-        return view('torres', compact('torres'));
+        $blocos = Bloco::all();
+        return view('torres', compact('torres', 'blocos'));
     }
 
     public function torresCreate(Request $request)
@@ -60,10 +61,12 @@ class TorresController extends Controller
         if ($request->isMethod('PUT')) {
             $request->validate([
                 'nome' => 'required|string|max:255',
+                'bloco_id' => 'required|exists:blocos,id',
             ]);
 
             $torre->update([
                 'nome' => $request->input('nome'),
+                'bloco_id' => $request->input('bloco_id'),
             ]);
 
             return redirect()
