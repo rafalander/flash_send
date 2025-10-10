@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlocosController;
+use App\Http\Controllers\TorresController;
+use App\Http\Controllers\MoradoresController;
+use App\Http\Controllers\EncomendasController;
 
 Route::redirect('/', '/home');
 
@@ -17,6 +20,14 @@ Route::prefix('blocos')->group(function () {
     Route::delete('/{id}', [BlocosController::class, 'blocosDelete'])->name('blocos.delete');
 });
 
-Route::view('/torres', 'torres')->name('torres');
+Route::prefix('torres')->group(function () {
+    Route::get('/',[TorresController::class, 'index'])->name('torres.index');
+    Route::get('/create', [TorresController::class , 'torresCreate'])->name('torres.create');
+    Route::post('/create', [TorresController::class , 'torresCreate'])->name('torres.store');
+    Route::put('/{id}/edit', [TorresController::class, 'torresEdit'])->name('torres.edit');
+    Route::delete('/{id}', [TorresController::class, 'torresDelete'])->name('torres.delete');
+});
 
 Route::view('/moradores', 'moradores')->name('moradores');
+
+Route::view('/apartamentos', 'apartamentos')->name('apartamentos.index');

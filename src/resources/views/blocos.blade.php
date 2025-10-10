@@ -18,7 +18,7 @@
 
                                 <button
                                     type="button"
-                                    class="btn btn-info btn-sm bi bi-pencil-square shadow-sm"
+                                    class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm"
                                     id="edit-btn-{{ $bloco->id }}"
                                     onclick="enableEdit({{ $bloco->id }})"
                                 ></button>
@@ -64,7 +64,7 @@
         input.classList.remove('d-none');
         display.classList.add('d-none');
 
-        editBtn.classList.remove('btn-info', 'bi-pencil-square');
+    editBtn.classList.remove('btn-warning', 'bi-pencil-square');
         editBtn.classList.add('btn-success', 'bi-check-lg');
 
         editBtn.onclick = function() { form.submit(); };
