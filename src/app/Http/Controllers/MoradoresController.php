@@ -101,7 +101,20 @@ class MoradoresController extends Controller
         ]);
 
         $file = $request->file('file');
-        $data = Excel::toCollection(null, $file)->first()->slice(1);
+        $sheet = Excel::toCollection(null, $file)->first();
+        $firstRow = $sheet->first();
+        $headerKeys = ['nome','email','cpf','telefone','apartamento_id','apartamento_numero','apartamento','numero','numeroapt'];
+        $hasHeader = false;
+        if (is_array($firstRow)) {
+            foreach ($headerKeys as $k) {
+                if (array_key_exists($k, $firstRow)) { $hasHeader = true; break; }
+            }
+        } elseif ($firstRow instanceof \Illuminate\Support\Collection) {
+            foreach ($headerKeys as $k) {
+                if ($firstRow->has($k)) { $hasHeader = true; break; }
+            }
+        }
+        $data = $hasHeader ? $sheet : $sheet->slice(1);
 
         $erros = [];
         $importados = 0;
@@ -109,73 +122,69 @@ class MoradoresController extends Controller
         $cpfsNoArquivo = [];
 
         foreach ($data as $index => $row) {
-            $nome = isset($row['nome']) ? trim((string)$row['nome']) : (isset($row[0]) ? trim((string)$row[0]) : null);
-            $email = isset($row['email']) ? trim((string)$row['email']) : (isset($row[1]) ? trim((string)$row[1]) : null);
-            $cpf = isset($row['cpf']) ? trim((string)$row['cpf']) : (isset($row[2]) ? trim((string)$row[2]) : null);
-            $telefone = isset($row['telefone']) ? trim((string)$row['telefone']) : (isset($row[3]) ? trim((string)$row[3]) : null);
+            $nome = $this->extractString($row, ['nome', 0]);
+            $email = $this->extractString($row, ['email', 1]);
+            $cpf = $this->extractString($row, ['cpf', 2]);
+            $telefone = $this->extractString($row, ['telefone', 3]);
 
-            // Accept either apartamento_id (legacy) or apartment number (prefer number)
-            $apartamento_id_raw = $row['apartamento_id'] ?? null; // legacy support
-            $apartamento_numero = $row['apartamento_numero'] ?? $row['apartamento'] ?? $row['numero'] ?? null; // preferred
-            if ($apartamento_numero === null && $apartamento_id_raw === null) {
-                // Fallback to 5th column if headers are missing; treat as number by default
-                $fallback = $row[4] ?? null;
-                if ($fallback !== null) {
-                    $apartamento_numero = trim((string)$fallback);
-                }
+            $apartamento_id_raw = $this->extractString($row, ['apartamento_id']);
+            $apartamento_numero = $this->extractString($row, ['apartamento_numero','apartamento','numero','numeroapt', 4]);
+
+            $allEmpty = empty($nome) && empty($email) && empty($cpf) && empty($telefone)
+                && empty($apartamento_numero) && empty($apartamento_id_raw);
+            if ($allEmpty) {
+                continue;
             }
 
             if (!$nome || !$email || !$cpf || (!$apartamento_numero && !$apartamento_id_raw)) {
-                $erros[] = "Linha " . ($index + 2) . ": dados incompletos.";
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": dados incompletos.";
                 continue;
             }
 
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $erros[] = "Linha " . ($index + 2) . ": e-mail inválido ({$email}).";
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": e-mail inválido ({$email}).";
                 continue;
             }
 
             if (in_array(strtolower($email), $emailsNoArquivo)) {
-                $erros[] = "Linha " . ($index + 2) . ": e-mail duplicado no próprio arquivo ({$email}).";
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": e-mail duplicado no próprio arquivo ({$email}).";
                 continue;
             }
             $emailsNoArquivo[] = strtolower($email);
 
-            $cpfDigits = preg_replace('/\D+/', '', (string)$cpf);
+            $cpfDigits = $this->normalizeCpf($cpf);
             if (strlen($cpfDigits) !== 11) {
-                $erros[] = "Linha " . ($index + 2) . ": CPF inválido ({$cpf}).";
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": CPF inválido ({$cpf}).";
                 continue;
             }
             if (in_array($cpfDigits, $cpfsNoArquivo)) {
-                $erros[] = "Linha " . ($index + 2) . ": CPF duplicado no próprio arquivo ({$cpf}).";
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": CPF duplicado no próprio arquivo ({$cpf}).";
                 continue;
             }
             $cpfsNoArquivo[] = $cpfDigits;
 
-            // Resolve apartamento_id: prefer lookup by number, fallback to provided id
             $apartamento_id = null;
             if ($apartamento_numero) {
                 $apartamento = Apartamento::where('numero', $apartamento_numero)->first();
                 if (!$apartamento) {
-                    $erros[] = "Linha " . ($index + 2) . ": apartamento número inexistente ({$apartamento_numero}).";
+                    $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": apartamento número inexistente ({$apartamento_numero}).";
                     continue;
                 }
                 $apartamento_id = $apartamento->id;
             } else {
-                // Legacy path using apartamento_id from file
                 if (!Apartamento::where('id', $apartamento_id_raw)->exists()) {
-                    $erros[] = "Linha " . ($index + 2) . ": apartamento_id inexistente ({$apartamento_id_raw}).";
+                    $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": apartamento_id inexistente ({$apartamento_id_raw}).";
                     continue;
                 }
                 $apartamento_id = (int) $apartamento_id_raw;
             }
 
             if (Morador::where('email', $email)->exists()) {
-                $erros[] = "Linha " . ($index + 2) . ": e-mail já cadastrado no banco ({$email}).";
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": e-mail já cadastrado no banco ({$email}).";
                 continue;
             }
             if (Morador::where('cpf', $cpfDigits)->exists()) {
-                $erros[] = "Linha " . ($index + 2) . ": CPF já cadastrado no banco ({$cpf}).";
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": CPF já cadastrado no banco ({$cpf}).";
                 continue;
             }
 
@@ -191,15 +200,48 @@ class MoradoresController extends Controller
         }
 
         if (count($erros) > 0) {
+            $msg = $this->buildErrorSummary($importados, $erros);
             return redirect()
                 ->route('moradores.index')
-                ->with('flasher', toastr()->error(
-                    "Importados: {$importados}. Erros: " . count($erros)
-                ));
+                ->with('flasher', toastr()->error($msg));
         }
+        $mensagem = $importados > 1
+            ? "{$importados} Moradores importados com sucesso"
+            : "{$importados} Morador importado com sucesso";
 
         return redirect()
             ->route('moradores.index')
-            ->with('flasher', toastr()->success("Moradores importados com sucesso! ({$importados})"));
+            ->with('flasher', toastr()->success($mensagem));
+    }
+
+    private function extractString($row, array $candidates)
+    {
+        foreach ($candidates as $key) {
+            if (is_int($key)) {
+                if ((is_array($row) && array_key_exists($key, $row)) || ($row instanceof \ArrayAccess && isset($row[$key]))) {
+                    $v = $row[$key];
+                    return $v === null ? null : trim((string)$v);
+                }
+            } else {
+                if ((is_array($row) && array_key_exists($key, $row)) || (is_object($row) && method_exists($row, 'has') && $row->has($key))) {
+                    $v = is_array($row) ? $row[$key] : $row[$key];
+                    return $v === null ? null : trim((string)$v);
+                }
+            }
+        }
+        return null;
+    }
+
+    private function normalizeCpf($cpf)
+    {
+        return preg_replace('/\D+/', '', (string) $cpf);
+    }
+
+    private function buildErrorSummary(int $importados, array $erros)
+    {
+        $max = 5;
+        $lista = implode(' | ', array_slice($erros, 0, $max));
+        $extra = count($erros) > $max ? ' +' . (count($erros) - $max) . '...' : '';
+        return "Importados: {$importados}. Erros: " . count($erros) . ". " . $lista . $extra;
     }
 }
