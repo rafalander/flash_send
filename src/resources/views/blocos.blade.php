@@ -1,5 +1,16 @@
 @extends('base')
 @section('content')
+<style>
+    .card {
+        background-color: #f1f1f1;
+        box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+</style>
 <div class="container">
     <h2 class="mb-4">Blocos do Condomínio</h2>
     <a href="{{ route('blocos.create') }}" class="btn btn-primary mb-3">Novo Bloco</a>
