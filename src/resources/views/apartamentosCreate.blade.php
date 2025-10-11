@@ -72,5 +72,8 @@
             <input type="file" name="file" class="form-control" accept=".csv,.xls,.xlsx" required>
             <button type="submit" class="btn btn-success w-auto" placeholder="importe um arquivo csv ou xls">Importar</button>
         </form>
+		<div class="text-muted small">
+			Campos esperados (por coluna): nome, torre_id.
+		</div>
     </div>
 @endsection

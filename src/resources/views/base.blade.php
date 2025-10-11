@@ -194,7 +194,7 @@
         <a href="{{ route('apartamentos.index') }}" title="Apartamentos">
           <i class="bi bi-door-open"></i><span class="label">Apartamentos</span>
         </a>
-        <a href="{{ route('moradores') }}" title="Moradores">
+        <a href="{{ route('moradores.index') }}" title="Moradores">
           <i class="bi bi-people"></i><span class="label">Moradores</span>
         </a>
       </div>

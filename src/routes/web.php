@@ -38,5 +38,11 @@ Route::prefix('apartamentos')->group(function () {
     Route::delete('/{id}', [ApartamentosController::class, 'apartamentosDelete'])->name('apartamentos.delete');
 });
 
-Route::view('/moradores', 'moradores')->name('moradores');
-
+Route::prefix('moradores')->group(function () {
+    Route::get('/', [MoradoresController::class, 'index'])->name('moradores.index');
+    Route::get('/create', [MoradoresController::class , 'moradoresCreate'])->name('moradores.create');
+    Route::post('/create', [MoradoresController::class , 'moradoresCreate'])->name('moradores.store');
+    Route::post('import', [MoradoresController::class, 'moradoresImport'])->name('moradores.import');
+    Route::put('/{id}/edit', [MoradoresController::class, 'moradoresEdit'])->name('moradores.edit');
+    Route::delete('/{id}', [MoradoresController::class, 'moradoresDelete'])->name('moradores.delete');
+});
