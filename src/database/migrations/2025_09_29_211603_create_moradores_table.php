@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nome');
             $table->string('email')->unique();
             $table->string('telefone')->nullable();
+            $table->string('cpf', 14)->unique();
             $table->foreignId('apartamento_id')->constrained('apartamentos')->onDelete('cascade');
             $table->timestamps();
         });

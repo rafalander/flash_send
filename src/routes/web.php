@@ -5,6 +5,7 @@ use App\Http\Controllers\BlocosController;
 use App\Http\Controllers\TorresController;
 use App\Http\Controllers\MoradoresController;
 use App\Http\Controllers\EncomendasController;
+use App\Http\Controllers\ApartamentosController;
 
 Route::redirect('/', '/home');
 
@@ -28,6 +29,20 @@ Route::prefix('torres')->group(function () {
     Route::delete('/{id}', [TorresController::class, 'torresDelete'])->name('torres.delete');
 });
 
-Route::view('/moradores', 'moradores')->name('moradores');
+Route::prefix('apartamentos')->group(function () {
+    Route::get('/', [ApartamentosController::class, 'index'])->name('apartamentos.index');
+    Route::get('/create', [ApartamentosController::class , 'apartamentosCreate'])->name('apartamentos.create');
+    Route::post('/create', [ApartamentosController::class , 'apartamentosCreate'])->name('apartamentos.store');
+    Route::post('import', [ApartamentosController::class, 'apartamentosImport'])->name('apartamentos.import');
+    Route::put('/{id}/edit', [ApartamentosController::class, 'apartamentosEdit'])->name('apartamentos.edit');
+    Route::delete('/{id}', [ApartamentosController::class, 'apartamentosDelete'])->name('apartamentos.delete');
+});
 
-Route::view('/apartamentos', 'apartamentos')->name('apartamentos.index');
+Route::prefix('moradores')->group(function () {
+    Route::get('/', [MoradoresController::class, 'index'])->name('moradores.index');
+    Route::get('/create', [MoradoresController::class , 'moradoresCreate'])->name('moradores.create');
+    Route::post('/create', [MoradoresController::class , 'moradoresCreate'])->name('moradores.store');
+    Route::post('import', [MoradoresController::class, 'moradoresImport'])->name('moradores.import');
+    Route::put('/{id}/edit', [MoradoresController::class, 'moradoresEdit'])->name('moradores.edit');
+    Route::delete('/{id}', [MoradoresController::class, 'moradoresDelete'])->name('moradores.delete');
+});
