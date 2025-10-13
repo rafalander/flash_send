@@ -1,9 +1,22 @@
 @extends('base')
 @section('content')
+
+
+<style>
+    .totalmoradores {
+        background-color: #f1f1f1;
+        box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 18px;
+    }
+</style>
+
 <div class="container">
   <h2 class="mb-4">Moradores</h2>
 
-  <a href="{{ route('moradores.create') }}" class="btn btn-primary mb-3">Novo Morador</a>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{{ route('moradores.create') }}" class="btn btn-primary mb-3">Novo Morador</a>
+    <p class="mb-0 p-2 totalmoradores">Total: {{ $moradores->count() }}  </p>
+  </div>
 
   <ul class="list-group">
     @foreach($moradores as $morador)
@@ -99,10 +112,10 @@
       const nomeDisplay = document.getElementById(`nome-display-${id}`);
       const emailInput = document.getElementById(`email-input-${id}`);
       const emailDisplay = document.getElementById(`email-display-${id}`);
-            const telefoneInput = document.getElementById(`telefone-input-${id}`);
-            const cpfInput = document.getElementById(`cpf-input-${id}`);
+      const telefoneInput = document.getElementById(`telefone-input-${id}`);
+      const cpfInput = document.getElementById(`cpf-input-${id}`);
       const telefoneDisplay = document.getElementById(`telefone-display-${id}`);
-            const cpfDisplay = document.getElementById(`cpf-display-${id}`);
+      const cpfDisplay = document.getElementById(`cpf-display-${id}`);
       const aptInput = document.getElementById(`apartamento-input-${id}`);
       const aptDisplay = document.getElementById(`apartamento-display-${id}`);
       const editBtn = document.getElementById(`edit-btn-mor-${id}`);
@@ -148,10 +161,10 @@
       const nomeDisplay = document.getElementById(`nome-display-${id}`);
       const emailInput = document.getElementById(`email-input-${id}`);
       const emailDisplay = document.getElementById(`email-display-${id}`);
-            const telefoneInput = document.getElementById(`telefone-input-${id}`);
-            const cpfInput = document.getElementById(`cpf-input-${id}`);
+      const telefoneInput = document.getElementById(`telefone-input-${id}`);
+      const cpfInput = document.getElementById(`cpf-input-${id}`);
       const telefoneDisplay = document.getElementById(`telefone-display-${id}`);
-            const cpfDisplay = document.getElementById(`cpf-display-${id}`);
+      const cpfDisplay = document.getElementById(`cpf-display-${id}`);
       const aptInput = document.getElementById(`apartamento-input-${id}`);
       const aptDisplay = document.getElementById(`apartamento-display-${id}`);
       const editBtn = document.getElementById(`edit-btn-mor-${id}`);
@@ -159,7 +172,6 @@
 
       if (!nomeInput || !nomeDisplay || !editBtn || !cancelBtn) return;
 
-      // reset values
       nomeInput.value = nomeDisplay.textContent.trim();
       if (emailInput) emailInput.value = emailDisplay.textContent.trim();
             if (cpfInput) cpfInput.value = cpfDisplay.textContent.trim();

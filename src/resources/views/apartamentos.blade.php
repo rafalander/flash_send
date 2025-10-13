@@ -1,10 +1,21 @@
 @extends('base')
 @section('content')
+
+<style>
+    .totalapt {
+        background-color: #f1f1f1;
+        box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 18px;
+    }
+</style>
+
 <div class="container">
     <h2 class="mb-4">Apartamentos</h2>
 
-    <a href="{{ route('apartamentos.create') }}" class="btn btn-primary mb-3">Novo Apartamento</a>
-
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{{ route('apartamentos.create') }}" class="btn btn-primary">Novo Apartamento</a>
+        <p class="mb-0 p-2 totalapt">Total: {{ $apartamentos->count() }}</p>
+    </div>
     <ul class="list-group">
         @foreach($apartamentos as $apartamento)
             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -119,7 +130,6 @@
 
             if (!numeroInput || !numeroDisplay || !editBtn || !cancelBtn || !form) return;
 
-            // reset input value to original
             numeroInput.value = numeroDisplay.textContent.trim();
 
             numeroInput.classList.add('d-none');
