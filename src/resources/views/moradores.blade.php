@@ -1,9 +1,22 @@
 @extends('base')
 @section('content')
+
+
+<style>
+    .totalmoradores {
+        background-color: #f1f1f1;
+        box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 18px;
+    }
+</style>
+
 <div class="container">
   <h2 class="mb-4">Moradores</h2>
 
-  <a href="{{ route('moradores.create') }}" class="btn btn-primary mb-3">Novo Morador</a>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{{ route('moradores.create') }}" class="btn btn-primary mb-3">Novo Morador</a>
+    <p class="mb-0 p-2 totalmoradores">Total: {{ $moradores->count() }}  </p>
+  </div>
 
   <ul class="list-group">
     @foreach($moradores as $morador)
