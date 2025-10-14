@@ -102,8 +102,8 @@
     @endforeach
   </ul>
 
-  <div class="d-flex justify-content-center mt-3">
-    {{ $moradores->links() }}
+  <div class="mt-3">
+      <x-pagination :paginator="$moradores" :summary="false" align="center" />
   </div>
 
   <script>
