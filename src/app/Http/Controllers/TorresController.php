@@ -12,7 +12,7 @@ class TorresController extends Controller
     {
         $torres = Torre::with('bloco')->get();
         $blocos = Bloco::all();
-        return view('torres', compact('torres', 'blocos'));
+        return view('pages.torres.index', compact('torres', 'blocos'));
     }
 
     public function torresCreate(Request $request)
@@ -45,7 +45,7 @@ class TorresController extends Controller
 
         $blocos = Bloco::all();
 
-        return view('torresCreate', compact('blocos'));
+        return view('pages.torres.create', compact('blocos'));
     }
     
     public function torresEdit(Request $request, $id)

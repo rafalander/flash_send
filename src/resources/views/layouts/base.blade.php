@@ -182,7 +182,7 @@
         <a href="{{ route('home') }}" title="Home">
           <i class="bi bi-house"></i><span class="label">Home</span>
         </a>
-        <a href="{{ route('encomendas') }}" title="Encomendas">
+        <a href="{{ route('encomendas.index') }}" title="Encomendas">
           <i class="bi bi-box2-heart"></i><span class="label">Encomendas</span>
         </a>
         <a href="{{ route('blocos.index') }}" title="Blocos">
