@@ -17,36 +17,43 @@
       height: 45px;
       display: flex;
       align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
     }
+
     body {
       min-height: 100vh;
       overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
-    .page-body { display: flex; }
+    .page-body {
+      display: flex;
+      flex: 1; /* ocupa o restante da tela */
+      flex-wrap: nowrap;
+    }
 
     /* Sidebar base */
     #sidebar {
       width: 60px;
       transition: width 0.35s ease-in-out;
-      height: calc(100vh - 68px);
       border-right: 1px solid rgba(0,0,0,.08);
-      position: relative;
       background: #f8f9fa;
       padding-top: 0.25rem;
       display: flex;
       flex-direction: column;
       align-items: center;
+      flex-shrink: 0;
     }
 
-    /* Sidebar expandida */
     #sidebar.expanded { width: 200px; }
 
-    /* Botão da setinha */
     #toggleSidebar {
       position: absolute;
       top: 1rem;
-      right: -15px; /* fica fora do sidebar */
+      right: -15px;
       border-radius: 50%;
       background: white;
       border: 1px solid #ccc;
@@ -65,7 +72,16 @@
       border-color: #999;
     }
 
-    /* Links do menu */
+    #menuItems {
+      margin-top: 0.5rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 1rem;
+    }
+
     #menuItems a {
       display: flex;
       align-items: center;
@@ -83,34 +99,21 @@
       border-radius: 4px;
     }
 
-    #menuItems {
-      margin-top: 0.5rem;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      padding-bottom: 1rem;
-    }
-
-    /* Tamanho/alinhamento dos ícones */
     #menuItems a i {
       font-size: 1.15rem;
       width: 1.5rem;
       text-align: center;
     }
 
-    /* Texto do menu com animação suave */
     #menuItems a .label {
       display: inline-block;
       white-space: nowrap;
       overflow: hidden;
-      max-width: 140px; /* espaço para o texto quando expandido */
+      max-width: 140px;
       opacity: 1;
       transition: max-width 0.35s ease-in-out, opacity 0.25s ease-in-out 0.05s;
     }
 
-    /* Sidebar colapsada: mostra só ícones */
     #sidebar:not(.expanded) #menuItems a {
       justify-content: center;
       gap: 0;
@@ -120,16 +123,16 @@
       opacity: 0;
     }
 
-    /* Sidebar expandida: centraliza itens também */
     #sidebar.expanded #menuItems a {
       justify-content: center;
     }
 
-    /* Conteúdo principal */
     main.content {
       flex-grow: 1;
       padding: 1.25rem;
+      min-width: 0;
     }
+
     .logo {
       height: 25px;
       object-fit: contain;
@@ -143,41 +146,67 @@
 
     footer {
       border-top: 1px solid rgba(0,0,0,.08);
-      position: relative;
+      background-color: #f8f9fa;
     }
-  .form-control:focus {
-    box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.25);
-  }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      #sidebar {
+        position: fixed;
+        top: 45px;
+        left: 0;
+        height: calc(100vh - 45px);
+        z-index: 1040;
+        transform: translateX(-100%);
+      }
+
+      #sidebar.expanded {
+        transform: translateX(0);
+      }
+
+      .page-body {
+        flex-direction: column;
+      }
+
+      main.content {
+        padding-top: 1rem;
+      }
+
+      #toggleSidebar {
+        right: auto;
+        left: 70px;
+      }
+    }
   </style>
 </head>
 <body>
 
   <!-- Navbar -->
-  <header class="p-1 text-bg-dark">
-    <div class="container-fluid d-flex align-items-center gap-3">
+  <header class="p-1 text-bg-dark w-100">
+    <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-3">
       <a href="/" class="d-flex align-items-center text-white text-decoration-none">
         <img src="{{ asset('images/icons/logo.png') }}" alt="Logo" class="logo">
         <strong class="d-none d-md-inline nameLogo">Flash Send</strong>
       </a>
-
-      <div class="ms-auto d-flex align-items-center gap-2">
-        <div class="text-end">
-       {{-- Mantendo a div porque provavelmente vou colocar alguma feature no lugar --}}
-        </div>
+      <div class="text-end">
+        {{-- Mantendo a div porque provavelmente vou colocar alguma feature no lugar --}}
       </div>
     </div>
   </header>
+
   <!-- Corpo da página -->
   <div class="page-body">
 
     <!-- Sidebar -->
-    <div id="sidebar" class="vh-100 shadow-sm">
-      <!-- Botão da setinha -->
+    <div id="sidebar" class="shadow-sm position-relative">
       <button id="toggleSidebar">
         <i id="toggleIcon" class="bi bi-chevron-right"></i>
       </button>
 
-      <!-- Menu -->
       <div id="menuItems">
         <a href="{{ route('home') }}" title="Home">
           <i class="bi bi-house"></i><span class="label">Home</span>
@@ -206,10 +235,9 @@
     </main>
   </div>
 
-  <footer class="p-1 text-bg-light mt-auto">
+  <footer class="p-1 text-bg-light">
     <div class="p-2 text-center" style="font-size: 0.75rem; color: hsl(60, 1%, 41%);">
       &copy; {{ date('Y') }} Flash Send
-      </a>
     </div>
   </footer>
 
@@ -237,19 +265,15 @@
         }
 
         if (!withTransition) {
-          void sidebar.offsetWidth; // força reflow
+          void sidebar.offsetWidth;
           sidebar.style.transition = "";
         }
       }
 
-      // pega o último estado salvo
       const saved = localStorage.getItem(KEY);
       const expanded = saved === "1";
-
-      // aplica sem animação no load
       applySidebarState(expanded, false);
 
-      // clique no botão
       toggleBtn.addEventListener("click", () => {
         const willExpand = !sidebar.classList.contains("expanded");
         applySidebarState(willExpand, true);
