@@ -1,4 +1,4 @@
-@extends('base')
+@extends('layouts.base')
 @section('content')
 <div class="container">
   <h2 class="mb-4">Torres do Condomínio</h2>

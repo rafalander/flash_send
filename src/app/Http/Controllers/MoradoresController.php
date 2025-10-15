@@ -13,7 +13,7 @@ class MoradoresController extends Controller
     {
         $moradores = Morador::with(['apartamento.torre.bloco'])->paginate(15);
         $apartamentos = Apartamento::with(['torre.bloco'])->get();
-        return view('moradores', compact('moradores', 'apartamentos'));
+        return view('pages.moradores.index', compact('moradores', 'apartamentos'));
     }
 
     public function moradoresCreate(Request $request)
@@ -41,7 +41,7 @@ class MoradoresController extends Controller
         }
 
         $apartamentos = Apartamento::with(['torre.bloco'])->get();
-        return view('moradoresCreate', compact('apartamentos'));
+        return view('pages.moradores.create', compact('apartamentos'));
     }
 
     public function moradoresEdit(Request $request, $id)
