@@ -46,6 +46,7 @@ Route::prefix('moradores')->group(function () {
     Route::post('import', [MoradoresController::class, 'moradoresImport'])->name('moradores.import');
     Route::put('/{id}/edit', [MoradoresController::class, 'moradoresEdit'])->name('moradores.edit');
     Route::delete('/{id}', [MoradoresController::class, 'moradoresDelete'])->name('moradores.delete');
+    Route::get('/search', [MoradoresController::class, 'moradorSearch'])->name('moradores.search');
 });
 
 Route::prefix('encomendas')->group(function () {
