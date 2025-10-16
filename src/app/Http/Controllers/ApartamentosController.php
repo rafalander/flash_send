@@ -155,4 +155,24 @@ class ApartamentosController extends Controller
             ->with('flasher', toastr()->success("Apartamentos importados com sucesso! ({$importados})"));
     }
 
+    public function apartamentoSearch(Request $request)
+    {
+        $searchItem = trim((string) $request->input('search', ''));
+
+        if ($searchItem === '') {
+            return redirect()->route('apartamentos.index');
+        }
+
+        $apartamentos = Apartamento::with(['torre.bloco'])
+            ->where('numero', 'like', '%' . $searchItem . '%')
+            ->paginate(15)
+            ->appends(['search' => $searchItem]);
+
+            // dd($apartamentos);
+
+        $torres = Torre::with('bloco')->get();
+
+        return view('pages.apartamentos.index', compact('apartamentos', 'torres'));
+    }
+
 }

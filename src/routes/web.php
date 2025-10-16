@@ -37,6 +37,7 @@ Route::prefix('apartamentos')->group(function () {
     Route::post('import', [ApartamentosController::class, 'apartamentosImport'])->name('apartamentos.import');
     Route::put('/{id}/edit', [ApartamentosController::class, 'apartamentosEdit'])->name('apartamentos.edit');
     Route::delete('/{id}', [ApartamentosController::class, 'apartamentosDelete'])->name('apartamentos.delete');
+    Route::get('/search', [ApartamentosController::class, 'apartamentoSearch'])->name('apartamentos.search');
 });
 
 Route::prefix('moradores')->group(function () {
