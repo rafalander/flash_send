@@ -91,7 +91,6 @@
       color: #000;
       width: 100%;
       justify-content: flex-start;
-      transition: gap 0.25s ease, padding 0.25s ease;
     }
 
     #menuItems a:hover {
@@ -111,7 +110,6 @@
       overflow: hidden;
       max-width: 140px;
       opacity: 1;
-      transition: max-width 0.35s ease-in-out, opacity 0.25s ease-in-out 0.05s;
     }
 
     #sidebar:not(.expanded) #menuItems a {
