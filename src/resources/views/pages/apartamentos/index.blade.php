@@ -14,8 +14,17 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="{{ route('apartamentos.create') }}" class="btn btn-primary">Novo Apartamento</a>
-        <p class="mb-0 p-2 totalapt">Total: {{ $apartamentos->count() }}</p>
+        <p class="mb-0 p-2 totalmoradores">Total: {{ method_exists($apartamentos, 'total') 
+            ? $apartamentos->total() 
+            : $apartamentos->count() }}  
+        </p>
     </div>
+
+    <x-search
+        :action="route('apartamentos.search')" 
+        placeholder="Buscar apartamento..."
+    />
+
     <ul class="list-group">
         @foreach($apartamentos as $apartamento)
             <li class="list-group-item d-flex justify-content-between align-items-center">
