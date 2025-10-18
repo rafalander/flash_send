@@ -15,10 +15,11 @@
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <a href="{{ route('moradores.create') }}" class="btn btn-primary mb-3">Novo Morador</a>
-    <p class="mb-0 p-2 totalmoradores">Total: {{ method_exists($moradores, 'total') 
-      ? $moradores->total() 
-      : $moradores->count() }}  
-    </p>
+    <x-count 
+      :total="$moradores->count()" 
+      label="Total:" 
+    />
+
   </div>
 
   <x-search
