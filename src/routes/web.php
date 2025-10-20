@@ -6,12 +6,13 @@ use App\Http\Controllers\TorresController;
 use App\Http\Controllers\MoradoresController;
 use App\Http\Controllers\EncomendasController;
 use App\Http\Controllers\ApartamentosController;
+use App\Http\Controllers\HomeController;
 
-Route::redirect('/', '/home');
+Route::redirect('/', 'home');
 
-Route::view('/home', 'home')->name('home');
-
-Route::view('/encomendas', 'encomendas')->name('encomendas');
+Route::prefix('home')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+});
 
 Route::prefix('blocos')->group(function () {
     Route::get('/', [BlocosController::class, 'index'])->name('blocos.index');
@@ -36,6 +37,7 @@ Route::prefix('apartamentos')->group(function () {
     Route::post('import', [ApartamentosController::class, 'apartamentosImport'])->name('apartamentos.import');
     Route::put('/{id}/edit', [ApartamentosController::class, 'apartamentosEdit'])->name('apartamentos.edit');
     Route::delete('/{id}', [ApartamentosController::class, 'apartamentosDelete'])->name('apartamentos.delete');
+    Route::get('/search', [ApartamentosController::class, 'apartamentoSearch'])->name('apartamentos.search');
 });
 
 Route::prefix('moradores')->group(function () {
@@ -45,4 +47,9 @@ Route::prefix('moradores')->group(function () {
     Route::post('import', [MoradoresController::class, 'moradoresImport'])->name('moradores.import');
     Route::put('/{id}/edit', [MoradoresController::class, 'moradoresEdit'])->name('moradores.edit');
     Route::delete('/{id}', [MoradoresController::class, 'moradoresDelete'])->name('moradores.delete');
+    Route::get('/search', [MoradoresController::class, 'moradorSearch'])->name('moradores.search');
+});
+
+Route::prefix('encomendas')->group(function () {
+    Route::get('/', [EncomendasController::class, 'index'])->name('encomendas.index');
 });

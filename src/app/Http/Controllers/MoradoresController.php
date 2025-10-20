@@ -13,7 +13,7 @@ class MoradoresController extends Controller
     {
         $moradores = Morador::with(['apartamento.torre.bloco'])->paginate(15);
         $apartamentos = Apartamento::with(['torre.bloco'])->get();
-        return view('moradores', compact('moradores', 'apartamentos'));
+        return view('pages.moradores.index', compact('moradores', 'apartamentos'));
     }
 
     public function moradoresCreate(Request $request)
@@ -41,7 +41,7 @@ class MoradoresController extends Controller
         }
 
         $apartamentos = Apartamento::with(['torre.bloco'])->get();
-        return view('moradoresCreate', compact('apartamentos'));
+        return view('pages.moradores.create', compact('apartamentos'));
     }
 
     public function moradoresEdit(Request $request, $id)
@@ -243,5 +243,27 @@ class MoradoresController extends Controller
         $lista = implode(' | ', array_slice($erros, 0, $max));
         $extra = count($erros) > $max ? ' +' . (count($erros) - $max) . '...' : '';
         return "Importados: {$importados}. Erros: " . count($erros) . ". " . $lista . $extra;
+    }
+
+    public function moradorSearch(Request $request)
+    {
+        $searchTerm = $request->input('search');
+        $moradores = Morador::with(['apartamento.torre.bloco'])
+            ->where(function ($q) use ($searchTerm) {
+                $q->where('nome', 'like', "%{$searchTerm}%")
+                  ->orWhere('email', 'like', "%{$searchTerm}%")
+                  ->orWhere('cpf', 'like', "%{$searchTerm}%")
+                  ->orWhere('telefone', 'like', "%{$searchTerm}%");
+            })
+            ->orWhereHas('apartamento', function ($query) use ($searchTerm) {
+                $query->where('numero', 'like', "%{$searchTerm}%");
+            })
+            ->paginate(15)
+            ->withQueryString();
+
+        // Carrega os apartamentos para popular o select de edição na mesma view
+        $apartamentos = Apartamento::with(['torre.bloco'])->get();
+
+        return view('pages.moradores.index', compact('moradores', 'apartamentos'));
     }
 }

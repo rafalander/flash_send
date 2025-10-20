@@ -10,7 +10,7 @@ class BlocosController extends Controller
     public function index()
     {
     $blocos = Bloco::withCount(['torres as qtdTorres'])->get();
-        return view('blocos', compact('blocos'));
+        return view('pages.blocos.index', compact('blocos'));
     }
 
     public function blocosCreate(Request $request)
@@ -39,7 +39,7 @@ class BlocosController extends Controller
                 ->success('Bloco criado com sucesso'));
         }
 
-        return view('blocosCreate');
+        return view('pages.blocos.create');
     }
 
     public function blocosEdit(Request $request, $id)

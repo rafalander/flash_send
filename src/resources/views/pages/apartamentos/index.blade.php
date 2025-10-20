@@ -1,4 +1,4 @@
-@extends('base')
+@extends('layouts.base')
 @section('content')
 
 <style>
@@ -14,8 +14,17 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="{{ route('apartamentos.create') }}" class="btn btn-primary">Novo Apartamento</a>
-        <p class="mb-0 p-2 totalapt">Total: {{ $apartamentos->count() }}</p>
+        <x-count 
+            :total="$apartamentos->count()" 
+            label="Total:" 
+        />
     </div>
+
+    <x-search
+        :action="route('apartamentos.search')" 
+        placeholder="Buscar apartamento..."
+    />
+
     <ul class="list-group">
         @foreach($apartamentos as $apartamento)
             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -75,8 +84,8 @@
         @endforeach
     </ul>
 
-    <div class="d-flex justify-content-center mt-3">
-        {{ $apartamentos->links() }}
+    <div class="mt-3">
+        <x-pagination :paginator="$apartamentos" :summary="false" align="center" />
     </div>
 
     <script>

@@ -13,7 +13,7 @@ class ApartamentosController extends Controller
     {
         $apartamentos = Apartamento::with(['torre.bloco'])->paginate(15);
         $torres = Torre::with('bloco')->get();
-        return view('apartamentos', compact('apartamentos', 'torres'));
+        return view('pages.apartamentos.index', compact('apartamentos', 'torres'));
     }
 
     public function apartamentosCreate(Request $request)
@@ -45,7 +45,7 @@ class ApartamentosController extends Controller
         }
 
         $torres = Torre::with('bloco')->get();
-        return view('apartamentosCreate', compact('torres'));
+        return view('pages.apartamentos.create', compact('torres'));
     }
 
     public function apartamentosEdit(Request $request, $id)
@@ -153,6 +153,26 @@ class ApartamentosController extends Controller
         return redirect()
             ->route('apartamentos.index')
             ->with('flasher', toastr()->success("Apartamentos importados com sucesso! ({$importados})"));
+    }
+
+    public function apartamentoSearch(Request $request)
+    {
+        $searchItem = trim((string) $request->input('search', ''));
+
+        if ($searchItem === '') {
+            return redirect()->route('apartamentos.index');
+        }
+
+        $apartamentos = Apartamento::with(['torre.bloco'])
+            ->where('numero', 'like', '%' . $searchItem . '%')
+            ->paginate(15)
+            ->appends(['search' => $searchItem]);
+
+            // dd($apartamentos);
+
+        $torres = Torre::with('bloco')->get();
+
+        return view('pages.apartamentos.index', compact('apartamentos', 'torres'));
     }
 
 }

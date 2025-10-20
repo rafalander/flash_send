@@ -1,4 +1,4 @@
-@extends('base')
+@extends('layouts.base')
 @section('content')
 <style>
     .card {
@@ -36,7 +36,7 @@
 
                                 <button
                                     type="button"
-                                    class="btn btn-danger btn-sm bi bi-x m-1 shadow-sm d-none"
+                                    class="btn btn-secondary btn-sm bi bi-x m-1 shadow-sm d-none"
                                     id="cancel-btn-{{ $bloco->id }}"
                                     onclick="cancelEdit({{ $bloco->id }})"
                                     title="Cancelar edição"
@@ -107,7 +107,7 @@
         display.classList.remove('d-none');
 
         editBtn.classList.remove('btn-success', 'bi-check-lg');
-        editBtn.classList.add('btn-info', 'bi-pencil-square');
+        editBtn.classList.add('btn-warning', 'bi-pencil-square');
 
         editBtn.onclick = function() { enableEdit(id); };
 
