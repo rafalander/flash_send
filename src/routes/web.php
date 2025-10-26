@@ -52,4 +52,9 @@ Route::prefix('moradores')->group(function () {
 
 Route::prefix('encomendas')->group(function () {
     Route::get('/', [EncomendasController::class, 'index'])->name('encomendas.index');
+    Route::get('/create', [EncomendasController::class , 'encomendasCreate'])->name('encomendas.create');
+    Route::post('/create', [EncomendasController::class , 'encomendasCreate'])->name('encomendas.store');
+    Route::put('/{id}/edit', [EncomendasController::class, 'encomendasEdit'])->name('encomendas.edit');
+    Route::delete('/{id}', [EncomendasController::class, 'encomendasDelete'])->name('encomendas.delete');
+    Route::get('/search', [EncomendasController::class, 'encomendaSearch'])->name('encomendas.search');
 });
