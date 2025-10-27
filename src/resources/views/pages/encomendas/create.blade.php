@@ -154,42 +154,44 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-	(function() {
+	(function () {
 		const scanBtn = document.getElementById('scan_codigo_btn');
 		const codigoInput = document.getElementById('codigo_rastreamento');
 		const help = document.getElementById('scan_help');
+
 		if (scanBtn && codigoInput) {
 			scanBtn.addEventListener('click', () => {
 				// Ativa modo leitura: foca e seleciona o campo
 				codigoInput.focus();
 				codigoInput.select();
 				codigoInput.dataset.scanActive = '1';
+
 				if (help) {
 					help.hidden = false;
 					setTimeout(() => { help.hidden = true; }, 4000);
 				}
 			});
 
-	// Ao pressionar Enter, finaliza o modo leitura
-	codigoInput.addEventListener('keydown', (e) => {
-		if (e.key === 'Enter' && codigoInput.dataset.scanActive === '1') {
-			e.preventDefault();
-			delete codigoInput.dataset.scanActive;
-			// Avança para o próximo campo importante
-			const next = document.getElementById('origem') || document.getElementById('morador_id');
-			if (next) next.focus();
+			// Ao pressionar Enter, finaliza o modo leitura
+			codigoInput.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter' && codigoInput.dataset.scanActive === '1') {
+					e.preventDefault();
+					delete codigoInput.dataset.scanActive;
+					// Avança para o próximo campo importante
+					const next = document.getElementById('origem') || document.getElementById('morador_id');
+					if (next) next.focus();
+				}
+			});
 		}
-	});
-	}
-})();
+	})();
 
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$('#morador_id').select2({
 			theme: 'bootstrap-5',
 			placeholder: "Selecione um morador",
 			allowClear: true,
 			language: {
-				noResults: function() {
+				noResults: function () {
 					return "Nenhum morador encontrado";
 				}
 			}
