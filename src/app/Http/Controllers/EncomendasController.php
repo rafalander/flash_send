@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Encomenda;
 use App\Models\Morador;
+use App\Models\Apartamento;
 
 class EncomendasController extends Controller
 {
@@ -109,7 +110,19 @@ class EncomendasController extends Controller
                   ->orWhere('data_recebimento', 'like', "%{$searchTerm}%");
             })
             ->orWhereHas('morador', function ($q) use ($searchTerm) {
-                $q->where('nome', 'like', "%{$searchTerm}%");
+                $q->where('nome', 'like', "%{$searchTerm}%")
+                  // também busca pelo número do apartamento (relacionamento)
+                  ->orWhereHas('apartamento', function ($q2) use ($searchTerm) {
+                      $q2->where('numero', 'like', "%{$searchTerm}%");
+                  })
+                  // busca por nome da torre
+                  ->orWhereHas('apartamento.torre', function ($q3) use ($searchTerm) {
+                      $q3->where('nome', 'like', "%{$searchTerm}%");
+                  })
+                  // busca por nome do bloco
+                  ->orWhereHas('apartamento.torre.bloco', function ($q4) use ($searchTerm) {
+                      $q4->where('nome', 'like', "%{$searchTerm}%");
+                  });
             })
             ->paginate(15)
             ->withQueryString();

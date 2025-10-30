@@ -48,6 +48,7 @@ Route::prefix('moradores')->group(function () {
     Route::put('/{id}/edit', [MoradoresController::class, 'moradoresEdit'])->name('moradores.edit');
     Route::delete('/{id}', [MoradoresController::class, 'moradoresDelete'])->name('moradores.delete');
     Route::get('/search', [MoradoresController::class, 'moradorSearch'])->name('moradores.search');
+    Route::get('/search/apartamento', [MoradoresController::class, 'moradoresSearchApt'])->name('moradores.search.apt');
 });
 
 Route::prefix('encomendas')->group(function () {
@@ -57,4 +58,5 @@ Route::prefix('encomendas')->group(function () {
     Route::put('/{id}/edit', [EncomendasController::class, 'encomendasEdit'])->name('encomendas.edit');
     Route::delete('/{id}', [EncomendasController::class, 'encomendasDelete'])->name('encomendas.delete');
     Route::get('/search', [EncomendasController::class, 'encomendaSearch'])->name('encomendas.search');
+    Route::get('/search/apartamento', [EncomendasController::class, 'encomendaSearchApt'])->name('encomendas.search.apartamento');
 });

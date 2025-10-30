@@ -266,4 +266,9 @@ class MoradoresController extends Controller
 
         return view('pages.moradores.index', compact('moradores', 'apartamentos'));
     }
+    
+    public function moradoresSearchApt(){
+        $apartamentos = Apartamento::with(['torre.bloco'])->get();
+        return response()->json($apartamentos);
+    }
 }
