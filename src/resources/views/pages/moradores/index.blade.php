@@ -23,7 +23,7 @@
   </div>
 
   <x-search
-    :action="route('moradores.search', 'moradores.search.apt')" 
+    :action="route('moradores.search')" 
     placeholder="Buscar morador..."
   />
 
