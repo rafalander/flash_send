@@ -101,6 +101,7 @@ class EncomendasController extends Controller
     public function encomendaSearch(Request $request)
     {
         $searchTerm = $request->input('search');
+        $type = $request->input('type');
 
         $encomendas = Encomenda::with(['morador.apartamento.torre.bloco'])
             ->where(function ($q) use ($searchTerm) {
@@ -127,8 +128,14 @@ class EncomendasController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $moradores = Morador::with(['apartamento.torre.bloco'])->get();
+        // Se o parâmetro type=apartamentos for passado, ou se o cliente
+        // requisitar JSON, retornamos a lista de apartamentos (para uso via AJAX)
+        if ($request->wantsJson() || $type === 'apartamentos') {
+            $apartamentos = Apartamento::with(['torre.bloco'])->get();
+            return response()->json($apartamentos);
+        }
 
+        $moradores = Morador::with(['apartamento.torre.bloco'])->get();
         return view('pages.encomendas.index', compact('encomendas', 'moradores'));
     }
 }

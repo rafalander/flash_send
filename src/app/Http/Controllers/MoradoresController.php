@@ -248,6 +248,7 @@ class MoradoresController extends Controller
     public function moradorSearch(Request $request)
     {
         $searchTerm = $request->input('search');
+        $type = $request->input('type');
         $moradores = Morador::with(['apartamento.torre.bloco'])
             ->where(function ($q) use ($searchTerm) {
                 $q->where('nome', 'like', "%{$searchTerm}%")
@@ -261,14 +262,15 @@ class MoradoresController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        // Carrega os apartamentos para popular o select de edição na mesma view
-        $apartamentos = Apartamento::with(['torre.bloco'])->get();
+        // Se o parâmetro type=apartamentos for passado, ou se o cliente
+        // requisitar JSON, retornamos a lista de apartamentos (para uso via AJAX)
+        if ($request->wantsJson() || $type === 'apartamentos') {
+            $apartamentos = Apartamento::with(['torre.bloco'])->get();
+            return response()->json($apartamentos);
+        }
 
-        return view('pages.moradores.index', compact('moradores', 'apartamentos'));
-    }
-    
-    public function moradoresSearchApt(){
+        // Caso normal: renderiza a view com moradores e apartamentos para edição
         $apartamentos = Apartamento::with(['torre.bloco'])->get();
-        return response()->json($apartamentos);
+        return view('pages.moradores.index', compact('moradores', 'apartamentos'));
     }
 }
