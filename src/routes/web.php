@@ -48,6 +48,7 @@ Route::prefix('moradores')->group(function () {
     Route::put('/{id}/edit', [MoradoresController::class, 'moradoresEdit'])->name('moradores.edit');
     Route::delete('/{id}', [MoradoresController::class, 'moradoresDelete'])->name('moradores.delete');
     Route::get('/search', [MoradoresController::class, 'moradorSearch'])->name('moradores.search');
+    
 });
 
 Route::prefix('encomendas')->group(function () {
@@ -57,4 +58,5 @@ Route::prefix('encomendas')->group(function () {
     Route::put('/{id}/edit', [EncomendasController::class, 'encomendasEdit'])->name('encomendas.edit');
     Route::delete('/{id}', [EncomendasController::class, 'encomendasDelete'])->name('encomendas.delete');
     Route::get('/search', [EncomendasController::class, 'encomendaSearch'])->name('encomendas.search');
+    
 });
