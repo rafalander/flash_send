@@ -205,10 +205,10 @@
             </div>
 
             <!-- Botões de Ação -->
-            <div class="btn-group-vertical btn-group-sm" role="group">
+            <div class="d-flex gap-2 justify-content-end">
               <button
                 type="button"
-                class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm mb-1"
+                class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm"
                 id="edit-btn-enc-{{ $encomenda->id }}"
                 onclick="enableEditEnc({{ $encomenda->id }})"
                 title="Editar"
@@ -216,7 +216,7 @@
 
               <button
                 type="button"
-                class="btn btn-secondary btn-sm bi bi-x shadow-sm mb-1 d-none"
+                class="btn btn-secondary btn-sm bi bi-x shadow-sm d-none"
                 id="cancel-btn-enc-{{ $encomenda->id }}"
                 onclick="cancelEditEnc({{ $encomenda->id }})"
                 title="Cancelar edição"
@@ -230,7 +230,7 @@
               >
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm bi bi-trash w-100" title="Excluir"></button>
+                <button type="submit" class="btn btn-danger btn-sm bi bi-trash" title="Excluir"></button>
               </form>
             </div>
           </div>
