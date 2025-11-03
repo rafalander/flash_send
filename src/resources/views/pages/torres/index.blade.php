@@ -1,60 +1,104 @@
 @extends('layouts.base')
 @section('content')
+
+<style>
+  .torre-item {
+    transition: background-color 0.3s ease;
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef !important;
+  }
+  .info-destaque {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.2;
+  }
+  .info-secundaria {
+    font-size: 0.8rem;
+    color: #6c757d;
+    line-height: 1.3;
+  }
+  .list-group-item {
+    padding: 0.75rem 1rem;
+  }
+</style>
+
 <div class="container">
   <h2 class="mb-4">Torres do Condomínio</h2>
 
-  <a href="{{ route('torres.create') }}" class="btn btn-primary mb-3">Nova Torre</a>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{{ route('torres.create') }}" class="btn btn-primary">Nova Torre</a>
+    <x-count 
+      :total="$torres->count()" 
+      label="Total:" 
+    />
+  </div>
 
   <ul class="list-group">
     @foreach($torres as $torre)
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center flex-grow-1 gap-2">
-          <form id="form-{{ $torre->id }}" action="{{ route('torres.edit', $torre->id) }}" method="POST" class="d-flex align-items-center flex-grow-1 gap-2">
-            @csrf
-            @method('PUT')
-            <span class="text-display me-2" id="name-display-{{ $torre->id }}">{{ $torre->nome }}</span>
-            <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control d-none w-auto me-2" id="name-input-{{ $torre->id }}">
-            
-            <span class="text-muted small" id="bloco-display-{{ $torre->id }}">{{ $torre->bloco->nome ?? 'N/A' }}</span>
-            <select name="bloco_id" id="bloco-input-{{ $torre->id }}" class="form-select form-select-sm d-none w-auto">
-              <option value="">Selecione um bloco</option>
-              @isset($blocos)
-                @foreach($blocos as $bloco)
-                  <option value="{{ $bloco->id }}" {{ (string)$torre->bloco_id === (string)$bloco->id ? 'selected' : '' }}>
-                    {{ $bloco->nome ?? "Bloco #{$bloco->id}" }}
-                  </option>
-                @endforeach
-              @endisset
-            </select>
-          </form>
-        </div>
+      <li class="list-group-item torre-item" id="torre-item-{{ $torre->id }}">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-10">
+            <form id="form-{{ $torre->id }}" action="{{ route('torres.edit', $torre->id) }}" method="POST">
+              @csrf
+              @method('PUT')
 
-        <div class="d-flex align-items-center">
-          <button
-            type="button"
-            class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm me-1"
-            id="edit-btn-{{ $torre->id }}"
-            onclick="enableEdit({{ $torre->id }})"
-          ></button>
+              <div class="row g-2">
+                <!-- Nome da Torre -->
+                <div class="col-md-6">
+                  <div class="mb-1">
+                    <i class="bi bi-building text-primary me-1"></i>
+                    <span class="info-destaque" id="name-display-{{ $torre->id }}">{{ $torre->nome }}</span>
+                    <input type="text" name="nome" value="{{ $torre->nome }}" class="form-control form-control-sm d-none" id="name-input-{{ $torre->id }}" maxlength="100">
+                  </div>
+                  <div class="info-secundaria">
+                    <i class="bi bi-layers me-1"></i>
+                    <span id="bloco-display-{{ $torre->id }}">{{ $torre->bloco->nome ?? '—' }}</span>
+                    <select name="bloco_id" id="bloco-input-{{ $torre->id }}" class="form-select form-select-sm d-none">
+                      <option value="">Selecione um bloco</option>
+                      @isset($blocos)
+                        @foreach($blocos as $bloco)
+                          <option value="{{ $bloco->id }}" {{ (string)$torre->bloco_id === (string)$bloco->id ? 'selected' : '' }}>
+                            {{ $bloco->nome ?? "Bloco #{$bloco->id}" }}
+                          </option>
+                        @endforeach
+                      @endisset
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
 
-          <button
-            type="button"
-            class="btn btn-secondary btn-sm bi bi-x m-1 shadow-sm d-none"
-            id="cancel-btn-{{ $torre->id }}"
-            onclick="cancelEdit({{ $torre->id }})"
-            title="Cancelar edição"
-          ></button>
+          <div class="col-md-2 text-end">
+            <button
+              type="button"
+              class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm me-1"
+              id="edit-btn-{{ $torre->id }}"
+              onclick="enableEdit({{ $torre->id }})"
+              title="Editar"
+            ></button>
 
-          <form
-            action="{{ route('torres.delete', $torre->id) }}"
-            method="POST"
-            class="d-inline ms-2"
-            onsubmit="return confirm('Tem certeza que deseja deletar esta torre?')"
-          >
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger btn-sm bi bi-trash"></button>
-          </form>
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm bi bi-x shadow-sm d-none"
+              id="cancel-btn-{{ $torre->id }}"
+              onclick="cancelEdit({{ $torre->id }})"
+              title="Cancelar edição"
+            ></button>
+
+            <form
+              action="{{ route('torres.delete', $torre->id) }}"
+              method="POST"
+              class="d-inline"
+              onsubmit="return confirm('Tem certeza que deseja deletar esta torre?')"
+            >
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-danger btn-sm bi bi-trash" title="Excluir"></button>
+            </form>
+          </div>
         </div>
       </li>
     @endforeach
@@ -81,6 +125,7 @@
 
       editBtn.classList.remove('btn-warning', 'bi-pencil-square');
       editBtn.classList.add('btn-success', 'bi-check-lg');
+      editBtn.title = 'Salvar';
 
       editBtn.onclick = function() { form.submit(); };
 
@@ -121,6 +166,7 @@
 
       editBtn.classList.remove('btn-success', 'bi-check-lg');
       editBtn.classList.add('btn-warning', 'bi-pencil-square');
+      editBtn.title = 'Editar';
 
       editBtn.onclick = function() { enableEdit(id); };
 
