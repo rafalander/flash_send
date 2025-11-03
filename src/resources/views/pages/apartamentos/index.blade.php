@@ -2,11 +2,26 @@
 @section('content')
 
 <style>
-    .totalapt {
-        background-color: #f1f1f1;
-        box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 18px;
-    }
+  .apartamento-item {
+    transition: background-color 0.3s ease;
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef !important;
+  }
+  .info-destaque {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.2;
+  }
+  .info-secundaria {
+    font-size: 0.8rem;
+    color: #6c757d;
+    line-height: 1.3;
+  }
+  .list-group-item {
+    padding: 0.75rem 1rem;
+  }
 </style>
 
 <div class="container">
@@ -27,58 +42,71 @@
 
     <ul class="list-group">
         @foreach($apartamentos as $apartamento)
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center flex-grow-1 gap-2">
-                    <form id="form-apt-{{ $apartamento->id }}" action="{{ route('apartamentos.edit', $apartamento->id) }}" method="POST" class="d-flex align-items-center flex-grow-1 gap-2">
-                        @csrf
-                        @method('PUT')
+            <li class="list-group-item apartamento-item" id="apartamento-item-{{ $apartamento->id }}">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-10">
+                        <form id="form-apt-{{ $apartamento->id }}" action="{{ route('apartamentos.edit', $apartamento->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
 
-                        <span class="text-display me-2 fw-bold" id="numero-display-{{ $apartamento->id }}">{{ $apartamento->numero }}</span>
-                        <input type="text" name="numero" value="{{ $apartamento->numero }}" class="form-control d-none w-auto me-2" id="numero-input-{{ $apartamento->id }}" maxlength="10">
+                            <div class="row g-2">
+                                <!-- Número do Apartamento -->
+                                <div class="col-md-6">
+                                    <div class="mb-1">
+                                        <i class="bi bi-door-closed text-primary me-1"></i>
+                                        <span class="info-destaque" id="numero-display-{{ $apartamento->id }}">Apt {{ $apartamento->numero }}</span>
+                                        <input type="text" name="numero" value="{{ $apartamento->numero }}" class="form-control form-control-sm d-none" id="numero-input-{{ $apartamento->id }}" maxlength="10">
+                                    </div>
+                                    <div class="info-secundaria">
+                                        <i class="bi bi-building me-1"></i>
+                                        <span id="torre-display-{{ $apartamento->id }}">{{ $apartamento->torre->nome ?? '—' }}</span>
+                                        @if(optional($apartamento->torre)->bloco)
+                                          | {{ $apartamento->torre->bloco->nome }}
+                                        @endif
+                                        <select name="torre_id" id="torre-input-{{ $apartamento->id }}" class="form-select form-select-sm d-none">
+                                            <option value="">Selecione uma torre</option>
+                                            @isset($torres)
+                                                @foreach($torres as $torre)
+                                                    <option value="{{ $torre->id }}" {{ (string)$apartamento->torre_id === (string)$torre->id ? 'selected' : '' }}>
+                                                        {{ $torre->nome ?? "Torre #{$torre->id}" }}
+                                                    </option>
+                                                @endforeach
+                                            @endisset
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
 
-                        <span class="text-muted small" id="torre-display-{{ $apartamento->id }}">{{ $apartamento->torre->nome ?? '—' }}</span>
-                        <select name="torre_id" id="torre-input-{{ $apartamento->id }}" class="form-select form-select-sm d-none w-auto">
-                            <option value="">Selecione uma torre</option>
-                            @isset($torres)
-                                @foreach($torres as $torre)
-                                    <option value="{{ $torre->id }}" {{ (string)$apartamento->torre_id === (string)$torre->id ? 'selected' : '' }}>
-                                        {{ $torre->nome ?? "Torre #{$torre->id}" }}
-                                    </option>
-                                @endforeach
-                            @endisset
-                        </select>
+                    <div class="col-md-2 text-end">
+                        <button
+                            type="button"
+                            class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm me-1"
+                            id="edit-btn-apt-{{ $apartamento->id }}"
+                            onclick="enableEditApt({{ $apartamento->id }})"
+                            title="Editar"
+                        ></button>
 
-                        <span class="text-muted small">| {{ optional(optional($apartamento->torre)->bloco)->nome ?? '—' }}</span>
-                    </form>
-                </div>
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-sm bi bi-x shadow-sm d-none"
+                            id="cancel-btn-apt-{{ $apartamento->id }}"
+                            onclick="cancelEditApt({{ $apartamento->id }})"
+                            title="Cancelar edição"
+                        ></button>
 
-                <div class="d-flex align-items-center">
-                    <button
-                        type="button"
-                        class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm me-1"
-                        id="edit-btn-apt-{{ $apartamento->id }}"
-                        onclick="enableEditApt({{ $apartamento->id }})"
-                        title="Editar"
-                    ></button>
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary btn-sm bi bi-x m-1 shadow-sm d-none"
-                        id="cancel-btn-apt-{{ $apartamento->id }}"
-                        onclick="cancelEditApt({{ $apartamento->id }})"
-                        title="Cancelar edição"
-                    ></button>
-
-                    <form
-                        action="{{ route('apartamentos.delete', $apartamento->id) }}"
-                        method="POST"
-                        class="d-inline ms-2"
-                        onsubmit="return confirm('Tem certeza que deseja excluir este apartamento?')"
-                    >
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm bi bi-trash" title="Excluir"></button>
-                    </form>
+                        <form
+                            action="{{ route('apartamentos.delete', $apartamento->id) }}"
+                            method="POST"
+                            class="d-inline"
+                            onsubmit="return confirm('Tem certeza que deseja excluir este apartamento?')"
+                        >
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm bi bi-trash" title="Excluir"></button>
+                        </form>
+                    </div>
                 </div>
             </li>
         @endforeach
