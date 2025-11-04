@@ -1,191 +1,202 @@
 @extends('layouts.base')
+@section('title', 'Apartamentos')
 @section('content')
-
-<style>
-  .apartamento-item {
-    transition: background-color 0.3s ease;
-    margin-bottom: 0.75rem;
-    border-radius: 8px;
-    border: 1px solid #e9ecef !important;
-  }
-  .info-destaque {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2c3e50;
-    line-height: 1.2;
-  }
-  .info-secundaria {
-    font-size: 0.8rem;
-    color: #6c757d;
-    line-height: 1.3;
-  }
-  .list-group-item {
-    padding: 0.75rem 1rem;
-  }
-</style>
-
-<div class="container">
-    <h2 class="mb-4">Apartamentos</h2>
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ route('apartamentos.create') }}" class="btn btn-primary">Novo Apartamento</a>
-        <x-count 
-            :total="$apartamentos->count()" 
-            label="Total:" 
-        />
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Apartamentos</h2>
     </div>
 
-    <x-search
-        :action="route('apartamentos.search')" 
-        placeholder="Buscar apartamento..."
-    />
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Cadastro de Apartamentos</h5>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalNovoApartamento">
+                <i class="bi bi-plus-circle me-1"></i> Novo Apartamento
+            </button>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Gerencie os apartamentos do condomínio.</p>
+            
+            <!-- Barra de Busca e Contador -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <x-search
+                        :action="route('apartamentos.search')" 
+                        placeholder="Buscar apartamento..."
+                    />
+                </div>
+                <div class="col-md-4 text-end">
+                    <x-count 
+                        :total="$apartamentos->total()" 
+                        label="Total:" 
+                    />
+                </div>
+            </div>
 
-    <ul class="list-group">
-        @foreach($apartamentos as $apartamento)
-            <li class="list-group-item apartamento-item" id="apartamento-item-{{ $apartamento->id }}">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-10">
-                        <form id="form-apt-{{ $apartamento->id }}" action="{{ route('apartamentos.edit', $apartamento->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
+            <!-- Tabela de Apartamentos -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Número</th>
+                            <th>Torre</th>
+                            <th>Bloco</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($apartamentos as $apartamento)
+                        <tr>
+                            <td>{{ $apartamento->id }}</td>
+                            <td>{{ $apartamento->numero }}</td>
+                            <td>{{ $apartamento->torre->nome ?? '—' }}</td>
+                            <td>{{ optional($apartamento->torre)->bloco->nome ?? '—' }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        title="Editar"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalEditarApartamento"
+                                        onclick="editarApartamento({{ $apartamento->id }}, '{{ addslashes($apartamento->numero) }}', {{ $apartamento->torre_id ?? 'null' }})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form action="{{ route('apartamentos.delete', $apartamento->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este apartamento?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Nenhum apartamento cadastrado</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-                            <div class="row g-2">
-                                <!-- Número do Apartamento -->
-                                <div class="col-md-6">
-                                    <div class="mb-1">
-                                        <i class="bi bi-door-closed text-primary me-1"></i>
-                                        <span class="info-destaque" id="numero-display-{{ $apartamento->id }}">Apt {{ $apartamento->numero }}</span>
-                                        <input type="text" name="numero" value="{{ $apartamento->numero }}" class="form-control form-control-sm d-none" id="numero-input-{{ $apartamento->id }}" maxlength="10">
-                                    </div>
-                                    <div class="info-secundaria">
-                                        <i class="bi bi-building me-1"></i>
-                                        <span id="torre-display-{{ $apartamento->id }}">{{ $apartamento->torre->nome ?? '—' }}</span>
-                                        @if(optional($apartamento->torre)->bloco)
-                                          | {{ $apartamento->torre->bloco->nome }}
-                                        @endif
-                                        <select name="torre_id" id="torre-input-{{ $apartamento->id }}" class="form-select form-select-sm d-none">
-                                            <option value="">Selecione uma torre</option>
-                                            @isset($torres)
-                                                @foreach($torres as $torre)
-                                                    <option value="{{ $torre->id }}" {{ (string)$apartamento->torre_id === (string)$torre->id ? 'selected' : '' }}>
-                                                        {{ $torre->nome ?? "Torre #{$torre->id}" }}
-                                                    </option>
-                                                @endforeach
-                                            @endisset
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+            <!-- Paginação -->
+            <div class="mt-3">
+                <x-pagination :paginator="$apartamentos" :summary="false" align="center" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Importação -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Importar Apartamentos</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('apartamentos.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <label for="file" class="form-label">Arquivo CSV/Excel</label>
+                        <input type="file" name="file" id="file" class="form-control" accept=".csv,.xls,.xlsx" required>
+                        <div class="form-text">Campos esperados: numero, torre_id</div>
                     </div>
-
-                    <div class="col-md-2 text-end">
-                        <button
-                            type="button"
-                            class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm me-1"
-                            id="edit-btn-apt-{{ $apartamento->id }}"
-                            onclick="enableEditApt({{ $apartamento->id }})"
-                            title="Editar"
-                        ></button>
-
-                        <button
-                            type="button"
-                            class="btn btn-secondary btn-sm bi bi-x shadow-sm d-none"
-                            id="cancel-btn-apt-{{ $apartamento->id }}"
-                            onclick="cancelEditApt({{ $apartamento->id }})"
-                            title="Cancelar edição"
-                        ></button>
-
-                        <form
-                            action="{{ route('apartamentos.delete', $apartamento->id) }}"
-                            method="POST"
-                            class="d-inline"
-                            onsubmit="return confirm('Tem certeza que deseja excluir este apartamento?')"
-                        >
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm bi bi-trash" title="Excluir"></button>
-                        </form>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-success w-100 d-block">
+                            <i class="bi bi-upload me-1"></i> Importar
+                        </button>
                     </div>
                 </div>
-            </li>
-        @endforeach
-    </ul>
-
-    <div class="mt-3">
-        <x-pagination :paginator="$apartamentos" :summary="false" align="center" />
+            </form>
+        </div>
     </div>
-
-    <script>
-        function enableEditApt(id) {
-            const numeroInput = document.getElementById(`numero-input-${id}`);
-            const numeroDisplay = document.getElementById(`numero-display-${id}`);
-            const torreDisplay = document.getElementById(`torre-display-${id}`);
-            const torreInput = document.getElementById(`torre-input-${id}`);
-            const editBtn = document.getElementById(`edit-btn-apt-${id}`);
-            const cancelBtn = document.getElementById(`cancel-btn-apt-${id}`);
-            const form = document.getElementById(`form-apt-${id}`);
-
-            if (!numeroInput || !numeroDisplay || !editBtn || !cancelBtn || !form) return;
-
-            numeroInput.classList.remove('d-none');
-            numeroDisplay.classList.add('d-none');
-            if (torreDisplay && torreInput) {
-                torreDisplay.classList.add('d-none');
-                torreInput.classList.remove('d-none');
-            }
-
-            editBtn.classList.remove('btn-warning', 'bi-pencil-square');
-            editBtn.classList.add('btn-success', 'bi-check-lg');
-            editBtn.title = 'Salvar';
-
-            editBtn.onclick = function() { form.submit(); };
-
-            cancelBtn.classList.remove('d-none');
-
-            numeroInput.focus();
-            numeroInput.select();
-
-            numeroInput.onkeydown = function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    form.submit();
-                } else if (e.key === 'Escape') {
-                    cancelEditApt(id);
-                }
-            };
-        }
-
-        function cancelEditApt(id) {
-            const numeroInput = document.getElementById(`numero-input-${id}`);
-            const numeroDisplay = document.getElementById(`numero-display-${id}`);
-            const torreDisplay = document.getElementById(`torre-display-${id}`);
-            const torreInput = document.getElementById(`torre-input-${id}`);
-            const editBtn = document.getElementById(`edit-btn-apt-${id}`);
-            const cancelBtn = document.getElementById(`cancel-btn-apt-${id}`);
-            const form = document.getElementById(`form-apt-${id}`);
-
-            if (!numeroInput || !numeroDisplay || !editBtn || !cancelBtn || !form) return;
-
-            numeroInput.value = numeroDisplay.textContent.trim();
-
-            numeroInput.classList.add('d-none');
-            numeroDisplay.classList.remove('d-none');
-            if (torreDisplay && torreInput) {
-                torreInput.classList.add('d-none');
-                torreDisplay.classList.remove('d-none');
-            }
-
-            editBtn.classList.remove('btn-success', 'bi-check-lg');
-            editBtn.classList.add('btn-warning', 'bi-pencil-square');
-            editBtn.title = 'Editar';
-
-            editBtn.onclick = function() { enableEditApt(id); };
-
-            cancelBtn.classList.add('d-none');
-
-            numeroInput.onkeydown = null;
-        }
-    </script>
 </div>
+
+<!-- Modal Novo Apartamento -->
+<div class="modal fade" id="modalNovoApartamento" tabindex="-1" aria-labelledby="modalNovoApartamentoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNovoApartamentoLabel">Novo Apartamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('apartamentos.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="numero" class="form-label">Número <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="numero" name="numero" required maxlength="10" placeholder="Ex.: 101, 12B">
+                    </div>
+                    <div class="mb-3">
+                        <label for="torre_id" class="form-label">Torre <span class="text-danger">*</span></label>
+                        <select class="form-select" id="torre_id" name="torre_id" required>
+                            <option value="">Selecione uma torre</option>
+                            @foreach($torres as $torre)
+                                <option value="{{ $torre->id }}">
+                                    {{ $torre->nome ?? "Torre #{$torre->id}" }}
+                                    @if($torre->bloco)
+                                        ({{ $torre->bloco->nome ?? "Bloco #{$torre->bloco->id}" }})
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Apartamento -->
+<div class="modal fade" id="modalEditarApartamento" tabindex="-1" aria-labelledby="modalEditarApartamentoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarApartamentoLabel">Editar Apartamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarApartamento" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_numero" class="form-label">Número <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="edit_numero" name="numero" required maxlength="10">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_torre_id" class="form-label">Torre <span class="text-danger">*</span></label>
+                        <select class="form-select" id="edit_torre_id" name="torre_id" required>
+                            <option value="">Selecione uma torre</option>
+                            @foreach($torres as $torre)
+                                <option value="{{ $torre->id }}">
+                                    {{ $torre->nome ?? "Torre #{$torre->id}" }}
+                                    @if($torre->bloco)
+                                        ({{ $torre->bloco->nome ?? "Bloco #{$torre->bloco->id}" }})
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editarApartamento(id, numero, torreId) {
+    const form = document.getElementById('formEditarApartamento');
+    form.action = `/apartamentos/${id}/edit`;
+    
+    document.getElementById('edit_numero').value = numero;
+    document.getElementById('edit_torre_id').value = torreId || '';
+}
+</script>
+
 @endsection

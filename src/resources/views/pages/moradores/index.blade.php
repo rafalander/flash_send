@@ -1,253 +1,243 @@
 @extends('layouts.base')
+@section('title', 'Moradores')
 @section('content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Moradores</h2>
+    </div>
 
-
-<style>
-    .totalmoradores {
-        background-color: #f1f1f1;
-        box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 18px;
-    }
-  /* Alinhado ao visual da listagem de encomendas */
-  .morador-item {
-    transition: background-color 0.3s ease;
-    margin-bottom: 0.75rem;
-    border-radius: 8px;
-    border: 1px solid #e9ecef !important;
-  }
-  .info-destaque {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2c3e50;
-    line-height: 1.2;
-  }
-  .info-secundaria {
-    font-size: 0.8rem;
-    color: #6c757d;
-    line-height: 1.3;
-  }
-  .list-group-item {
-    padding: 0.75rem 1rem;
-  }
-</style>
-
-<div class="container">
-  <h2 class="mb-4">Moradores</h2>
-
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <a href="{{ route('moradores.create') }}" class="btn btn-primary">Novo Morador</a>
-    <x-count 
-      :total="$moradores->count()" 
-      label="Total:" 
-    />
-
-  </div>
-
-  <x-search
-    :action="route('moradores.search')" 
-    placeholder="Buscar morador..."
-  />
-
-  <ul class="list-group">
-    @foreach($moradores as $morador)
-      <li class="list-group-item morador-item" id="morador-item-{{ $morador->id }}">
-        <div class="row g-2 align-items-center">
-          <!-- Conteúdo principal em formulário (nome, email, endereço, docs) -->
-          <div class="col-md-10">
-            <form id="form-mor-{{ $morador->id }}" action="{{ route('moradores.edit', $morador->id) }}" method="POST">
-              @csrf
-              @method('PUT')
-
-              <div class="row g-2">
-                <!-- Nome + Email -->
-                <div class="col-md-4">
-                  <div class="mb-1 text-truncate">
-                    <i class="bi bi-person-fill text-primary me-1"></i>
-                    <span class="info-destaque" id="nome-display-{{ $morador->id }}">{{ $morador->nome }}</span>
-                    <input type="text" name="nome" value="{{ $morador->nome }}" class="form-control form-control-sm d-none" id="nome-input-{{ $morador->id }}" maxlength="100">
-                  </div>
-                  <div class="info-secundaria text-truncate">
-                    <i class="bi bi-envelope me-1"></i>
-                    <span id="email-display-{{ $morador->id }}">{{ $morador->email }}</span>
-                    <input type="email" name="email" value="{{ $morador->email }}" class="form-control form-control-sm d-none" id="email-input-{{ $morador->id }}" maxlength="150">
-                  </div>
-                </div>
-
-                <!-- Apartamento / Torre / Bloco -->
-                <div class="col-md-4">
-                  <div class="mb-1 info-secundaria text-truncate">
-                    <i class="bi bi-building me-1"></i>
-                    <span id="apartamento-display-{{ $morador->id }}">
-                      Apt {{ optional($morador->apartamento)->numero ?? '—' }}
-                      @if(optional($morador->apartamento)->torre)
-                        | {{ $morador->apartamento->torre->nome ?? 'Torre' }}
-                      @endif
-                      @if(optional(optional($morador->apartamento)->torre)->bloco)
-                        | {{ $morador->apartamento->torre->bloco->nome ?? 'Bloco' }}
-                      @endif
-                    </span>
-                  </div>
-                  <select name="apartamento_id" id="apartamento-input-{{ $morador->id }}" class="form-select form-select-sm d-none">
-                    <option value="">Selecione um apartamento</option>
-                    @isset($apartamentos)
-                      @foreach($apartamentos as $apt)
-                        <option value="{{ $apt->id }}" {{ (string)$morador->apartamento_id === (string)$apt->id ? 'selected' : '' }}>
-                          {{ $apt->numero }} — {{ optional($apt->torre)->nome ?? 'Torre' }}{{ optional(optional($apt->torre)->bloco)->nome ? ' | ' . optional(optional($apt->torre)->bloco)->nome : '' }}
-                        </option>
-                      @endforeach
-                    @endisset
-                  </select>
-                </div>
-
-                <!-- Documentos e Contato -->
-                <div class="col-md-4">
-                  <div class="info-secundaria mb-1 text-truncate">
-                    <i class="bi bi-file-earmark-text me-1"></i>
-                    <span id="cpf-display-{{ $morador->id }}">{{ $morador->cpf ?? '—' }}</span>
-                    <input type="text" name="cpf" value="{{ $morador->cpf }}" class="form-control form-control-sm d-none" id="cpf-input-{{ $morador->id }}" maxlength="14">
-                  </div>
-                  <div class="info-secundaria text-truncate">
-                    <i class="bi bi-telephone me-1"></i>
-                    <span id="telefone-display-{{ $morador->id }}">{{ $morador->telefone ?? '—' }}</span>
-                    <input type="text" name="telefone" value="{{ $morador->telefone }}" class="form-control form-control-sm d-none" id="telefone-input-{{ $morador->id }}" maxlength="20">
-                  </div>
-                </div>
-              </div>
-
-            </form>
-          </div>
-
-          <!-- Ações -->
-          <div class="col-md-2 text-end">
-            <div class="d-flex gap-2 justify-content-end">
-              <button
-                type="button"
-                class="btn btn-warning btn-sm bi bi-pencil-square shadow-sm"
-                id="edit-btn-mor-{{ $morador->id }}"
-                onclick="enableEditMor({{ $morador->id }})"
-                title="Editar"
-              ></button>
-
-              <button
-                type="button"
-                class="btn btn-secondary btn-sm bi bi-x shadow-sm d-none"
-                id="cancel-btn-mor-{{ $morador->id }}"
-                onclick="cancelEditMor({{ $morador->id }})"
-                title="Cancelar edição"
-              ></button>
-
-              <form
-                action="{{ route('moradores.delete', $morador->id) }}"
-                method="POST"
-                class="d-inline"
-                onsubmit="return confirm('Tem certeza que deseja excluir este morador?')"
-              >
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm bi bi-trash" title="Excluir"></button>
-              </form>
-            </div>
-          </div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Cadastro de Moradores</h5>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalNovoMorador">
+                <i class="bi bi-plus-circle me-1"></i> Novo Morador
+            </button>
         </div>
-      </li>
-    @endforeach
-  </ul>
+        <div class="card-body">
+            <p class="text-muted">Gerencie os moradores do condomínio.</p>
+            
+            <!-- Barra de Busca e Contador -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <x-search
+                        :action="route('moradores.search')" 
+                        placeholder="Buscar morador..."
+                    />
+                </div>
+                <div class="col-md-4 text-end">
+                    <x-count 
+                        :total="$moradores->total()" 
+                        label="Total:" 
+                    />
+                </div>
+            </div>
 
-  <div class="mt-3">
-      <x-pagination :paginator="$moradores" :summary="false" align="center" />
-  </div>
+            <!-- Tabela de Moradores -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>Apartamento</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($moradores as $morador)
+                        <tr>
+                            <td>{{ $morador->nome }}</td>
+                            <td>{{ $morador->email }}</td>
+                            <td>{{ $morador->cpf ?? '—' }}</td>
+                            <td>{{ $morador->telefone ?? '—' }}</td>
+                            <td>
+                                @if($morador->apartamento)
+                                    Apt {{ $morador->apartamento->numero }}
+                                    @if(optional($morador->apartamento)->torre)
+                                        | {{ $morador->apartamento->torre->nome }}
+                                    @endif
+                                    @if(optional(optional($morador->apartamento)->torre)->bloco)
+                                        | {{ $morador->apartamento->torre->bloco->nome }}
+                                    @endif
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        title="Editar"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalEditarMorador"
+                                        onclick="editarMorador({{ $morador->id }}, '{{ addslashes($morador->nome) }}', '{{ addslashes($morador->email) }}', '{{ addslashes($morador->cpf ?? '') }}', '{{ addslashes($morador->telefone ?? '') }}', {{ $morador->apartamento_id ?? 'null' }})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form action="{{ route('moradores.delete', $morador->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este morador?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Nenhum morador cadastrado</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-  <script>
-    function enableEditMor(id) {
-      const nomeInput = document.getElementById(`nome-input-${id}`);
-      const nomeDisplay = document.getElementById(`nome-display-${id}`);
-      const emailInput = document.getElementById(`email-input-${id}`);
-      const emailDisplay = document.getElementById(`email-display-${id}`);
-      const telefoneInput = document.getElementById(`telefone-input-${id}`);
-      const cpfInput = document.getElementById(`cpf-input-${id}`);
-      const telefoneDisplay = document.getElementById(`telefone-display-${id}`);
-      const cpfDisplay = document.getElementById(`cpf-display-${id}`);
-      const aptInput = document.getElementById(`apartamento-input-${id}`);
-      const aptDisplay = document.getElementById(`apartamento-display-${id}`);
-      const editBtn = document.getElementById(`edit-btn-mor-${id}`);
-      const cancelBtn = document.getElementById(`cancel-btn-mor-${id}`);
-      const form = document.getElementById(`form-mor-${id}`);
+            <!-- Paginação -->
+            <div class="mt-3">
+                <x-pagination :paginator="$moradores" :summary="false" align="center" />
+            </div>
+        </div>
+    </div>
 
-      if (!nomeInput || !nomeDisplay || !editBtn || !cancelBtn || !form) return;
-
-      nomeInput.classList.remove('d-none');
-      nomeDisplay.classList.add('d-none');
-      if (emailInput && emailDisplay) { emailInput.classList.remove('d-none'); emailDisplay.classList.add('d-none'); }
-            if (cpfInput && cpfDisplay) { cpfInput.classList.remove('d-none'); cpfDisplay.classList.add('d-none'); }
-            if (telefoneInput && telefoneDisplay) { telefoneInput.classList.remove('d-none'); telefoneDisplay.classList.add('d-none'); }
-      if (aptInput && aptDisplay) { aptInput.classList.remove('d-none'); aptDisplay.classList.add('d-none'); }
-
-      editBtn.classList.remove('btn-warning', 'bi-pencil-square');
-      editBtn.classList.add('btn-success', 'bi-check-lg');
-      editBtn.title = 'Salvar';
-      editBtn.onclick = function() { form.submit(); };
-
-      cancelBtn.classList.remove('d-none');
-
-      nomeInput.focus();
-      nomeInput.select();
-
-      const keyHandler = function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          form.submit();
-        } else if (e.key === 'Escape') {
-          cancelEditMor(id);
-        }
-      };
-      nomeInput.onkeydown = keyHandler;
-      if (emailInput) emailInput.onkeydown = keyHandler;
-            if (cpfInput) cpfInput.onkeydown = keyHandler;
-            if (telefoneInput) telefoneInput.onkeydown = keyHandler;
-      if (aptInput) aptInput.onkeydown = keyHandler;
-    }
-
-    function cancelEditMor(id) {
-      const nomeInput = document.getElementById(`nome-input-${id}`);
-      const nomeDisplay = document.getElementById(`nome-display-${id}`);
-      const emailInput = document.getElementById(`email-input-${id}`);
-      const emailDisplay = document.getElementById(`email-display-${id}`);
-      const telefoneInput = document.getElementById(`telefone-input-${id}`);
-      const cpfInput = document.getElementById(`cpf-input-${id}`);
-      const telefoneDisplay = document.getElementById(`telefone-display-${id}`);
-      const cpfDisplay = document.getElementById(`cpf-display-${id}`);
-      const aptInput = document.getElementById(`apartamento-input-${id}`);
-      const aptDisplay = document.getElementById(`apartamento-display-${id}`);
-      const editBtn = document.getElementById(`edit-btn-mor-${id}`);
-      const cancelBtn = document.getElementById(`cancel-btn-mor-${id}`);
-
-      if (!nomeInput || !nomeDisplay || !editBtn || !cancelBtn) return;
-
-      nomeInput.value = nomeDisplay.textContent.trim();
-      if (emailInput) emailInput.value = emailDisplay.textContent.trim();
-            if (cpfInput) cpfInput.value = cpfDisplay.textContent.trim();
-            if (telefoneInput) telefoneInput.value = telefoneDisplay.textContent.trim();
-
-      nomeInput.classList.add('d-none');
-      nomeDisplay.classList.remove('d-none');
-      if (emailInput && emailDisplay) { emailInput.classList.add('d-none'); emailDisplay.classList.remove('d-none'); }
-            if (cpfInput && cpfDisplay) { cpfInput.classList.add('d-none'); cpfDisplay.classList.remove('d-none'); }
-            if (telefoneInput && telefoneDisplay) { telefoneInput.classList.add('d-none'); telefoneDisplay.classList.remove('d-none'); }
-      if (aptInput && aptDisplay) { aptInput.classList.add('d-none'); aptDisplay.classList.remove('d-none'); }
-
-      editBtn.classList.remove('btn-success', 'bi-check-lg');
-      editBtn.classList.add('btn-warning', 'bi-pencil-square');
-      editBtn.title = 'Editar';
-      editBtn.onclick = function() { enableEditMor(id); };
-
-      cancelBtn.classList.add('d-none');
-
-      nomeInput.onkeydown = null;
-      if (emailInput) emailInput.onkeydown = null;
-            if (cpfInput) cpfInput.onkeydown = null;
-            if (telefoneInput) telefoneInput.onkeydown = null;
-      if (aptInput) aptInput.onkeydown = null;
-    }
-  </script>
+    <!-- Seção de Importação -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Importar Moradores</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('moradores.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <label for="file" class="form-label">Arquivo CSV/Excel</label>
+                        <input type="file" name="file" id="file" class="form-control" accept=".csv,.xls,.xlsx" required>
+                        <div class="form-text">Campos esperados: nome, email, cpf, telefone, numeroApt</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-success w-100 d-block">
+                            <i class="bi bi-upload me-1"></i> Importar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<!-- Modal Novo Morador -->
+<div class="modal fade" id="modalNovoMorador" tabindex="-1" aria-labelledby="modalNovoMoradorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNovoMoradorLabel">Novo Morador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('moradores.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="nome" name="nome" required maxlength="150" placeholder="Nome completo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" required maxlength="150" placeholder="exemplo@dominio.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cpf" class="form-label">CPF <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="cpf" name="cpf" required maxlength="14" placeholder="000.000.000-00">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <input type="text" class="form-control" id="telefone" name="telefone" maxlength="20" placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="mb-3">
+                        <label for="apartamento_id" class="form-label">Apartamento <span class="text-danger">*</span></label>
+                        <select class="form-select" id="apartamento_id" name="apartamento_id" required>
+                            <option value="">Selecione um apartamento</option>
+                            @foreach($apartamentos as $apt)
+                                <option value="{{ $apt->id }}">
+                                    {{ $apt->numero }} — {{ optional($apt->torre)->nome ?? 'Torre' }}
+                                    @if(optional($apt->torre)->bloco)
+                                        | {{ $apt->torre->bloco->nome }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Morador -->
+<div class="modal fade" id="modalEditarMorador" tabindex="-1" aria-labelledby="modalEditarMoradorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarMoradorLabel">Editar Morador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarMorador" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="edit_nome" name="nome" required maxlength="150">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_email" class="form-label">E-mail <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="edit_email" name="email" required maxlength="150">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_cpf" class="form-label">CPF <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="edit_cpf" name="cpf" required maxlength="14">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_telefone" class="form-label">Telefone</label>
+                        <input type="text" class="form-control" id="edit_telefone" name="telefone" maxlength="20">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_apartamento_id" class="form-label">Apartamento <span class="text-danger">*</span></label>
+                        <select class="form-select" id="edit_apartamento_id" name="apartamento_id" required>
+                            <option value="">Selecione um apartamento</option>
+                            @foreach($apartamentos as $apt)
+                                <option value="{{ $apt->id }}">
+                                    {{ $apt->numero }} — {{ optional($apt->torre)->nome ?? 'Torre' }}
+                                    @if(optional($apt->torre)->bloco)
+                                        | {{ $apt->torre->bloco->nome }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editarMorador(id, nome, email, cpf, telefone, apartamentoId) {
+    const form = document.getElementById('formEditarMorador');
+    form.action = `/moradores/${id}/edit`;
+    
+    document.getElementById('edit_nome').value = nome;
+    document.getElementById('edit_email').value = email;
+    document.getElementById('edit_cpf').value = cpf;
+    document.getElementById('edit_telefone').value = telefone;
+    document.getElementById('edit_apartamento_id').value = apartamentoId || '';
+}
+</script>
+
 @endsection
