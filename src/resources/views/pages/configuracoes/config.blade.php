@@ -9,12 +9,7 @@
     <!-- Nav Tabs -->
     <ul class="nav nav-tabs mb-4" id="configTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="origem-tab" data-bs-toggle="tab" data-bs-target="#origem" type="button" role="tab">
-                <i class="bi bi-pin-map me-1"></i> Origem
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="geral-tab" data-bs-toggle="tab" data-bs-target="#geral" type="button" role="tab">
+            <button class="nav-link active" id="geral-tab" data-bs-toggle="tab" data-bs-target="#geral" type="button" role="tab">
                 <i class="bi bi-gear me-1"></i> Geral
             </button>
         </li>
@@ -23,13 +18,18 @@
                 <i class="bi bi-bell me-1"></i> Notificações
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="origem-tab" data-bs-toggle="tab" data-bs-target="#origem" type="button" role="tab">
+                <i class="bi bi-pin-map me-1"></i> Origem
+            </button>
+        </li>
     </ul>
 
     <!-- Tab Content -->
     <div class="tab-content" id="configTabContent">
         
         <!-- Aba Origem -->
-        <div class="tab-pane fade show active" id="origem" role="tabpanel">
+    <div class="tab-pane fade" id="origem" role="tabpanel">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Cadastro de Origem</h5>
@@ -91,7 +91,7 @@
         </div>
 
         <!-- Aba Geral -->
-        <div class="tab-pane fade" id="geral" role="tabpanel">
+    <div class="tab-pane fade show active" id="geral" role="tabpanel">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">Configurações Gerais</h5>
