@@ -60,3 +60,10 @@ Route::prefix('encomendas')->group(function () {
     Route::get('/search', [EncomendasController::class, 'encomendaSearch'])->name('encomendas.search');
     
 });
+
+Route::prefix('config')->group(function () {
+    Route::get('/', [App\Http\Controllers\Config::class, 'index'])->name('config.index');
+    Route::post('/origem/store', [App\Http\Controllers\Config::class, 'origemStore'])->name('config.origem.store');
+    Route::put('/origem/{id}', [App\Http\Controllers\Config::class, 'origemUpdate'])->name('config.origem.update');
+    Route::delete('/origem/{id}', [App\Http\Controllers\Config::class, 'origemDelete'])->name('config.origem.delete');
+});
