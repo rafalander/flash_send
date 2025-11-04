@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Encomenda;
 use App\Models\Morador;
+use App\Models\Apartamento;
+use App\Models\Origem;
 
 class EncomendasController extends Controller
 {
@@ -12,7 +14,8 @@ class EncomendasController extends Controller
     {
         $encomendas = Encomenda::with(['morador.apartamento.torre.bloco'])->paginate(15);
         $moradores = Morador::with(['apartamento.torre.bloco'])->get();
-        return view('pages.encomendas.index', compact('encomendas', 'moradores'));
+        $origens = Origem::where('ativo', true)->orderBy('nome_origem')->get();
+        return view('pages.encomendas.index', compact('encomendas', 'moradores', 'origens'));
     }
 
     public function encomendasCreate(Request $request)
@@ -42,7 +45,8 @@ class EncomendasController extends Controller
         }
 
         $moradores = Morador::with(['apartamento.torre.bloco'])->get();
-        return view('pages.encomendas.create', compact('moradores'));
+        $origens = Origem::where('ativo', true)->orderBy('nome_origem')->get();
+        return view('pages.encomendas.create', compact('moradores', 'origens'));
     }
 
     public function encomendasEdit(Request $request, $id)
@@ -100,6 +104,7 @@ class EncomendasController extends Controller
     public function encomendaSearch(Request $request)
     {
         $searchTerm = $request->input('search');
+        $type = $request->input('type');
 
         $encomendas = Encomenda::with(['morador.apartamento.torre.bloco'])
             ->where(function ($q) use ($searchTerm) {
@@ -109,13 +114,31 @@ class EncomendasController extends Controller
                   ->orWhere('data_recebimento', 'like', "%{$searchTerm}%");
             })
             ->orWhereHas('morador', function ($q) use ($searchTerm) {
-                $q->where('nome', 'like', "%{$searchTerm}%");
+                $q->where('nome', 'like', "%{$searchTerm}%")
+                  // também busca pelo número do apartamento (relacionamento)
+                  ->orWhereHas('apartamento', function ($q2) use ($searchTerm) {
+                      $q2->where('numero', 'like', "%{$searchTerm}%");
+                  })
+                  // busca por nome da torre
+                  ->orWhereHas('apartamento.torre', function ($q3) use ($searchTerm) {
+                      $q3->where('nome', 'like', "%{$searchTerm}%");
+                  })
+                  // busca por nome do bloco
+                  ->orWhereHas('apartamento.torre.bloco', function ($q4) use ($searchTerm) {
+                      $q4->where('nome', 'like', "%{$searchTerm}%");
+                  });
             })
             ->paginate(15)
             ->withQueryString();
 
-        $moradores = Morador::with(['apartamento.torre.bloco'])->get();
+        // Se o parâmetro type=apartamentos for passado, ou se o cliente
+        // requisitar JSON, retornamos a lista de apartamentos (para uso via AJAX)
+        if ($request->wantsJson() || $type === 'apartamentos') {
+            $apartamentos = Apartamento::with(['torre.bloco'])->get();
+            return response()->json($apartamentos);
+        }
 
+        $moradores = Morador::with(['apartamento.torre.bloco'])->get();
         return view('pages.encomendas.index', compact('encomendas', 'moradores'));
     }
 }

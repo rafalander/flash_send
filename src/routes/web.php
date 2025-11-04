@@ -48,6 +48,7 @@ Route::prefix('moradores')->group(function () {
     Route::put('/{id}/edit', [MoradoresController::class, 'moradoresEdit'])->name('moradores.edit');
     Route::delete('/{id}', [MoradoresController::class, 'moradoresDelete'])->name('moradores.delete');
     Route::get('/search', [MoradoresController::class, 'moradorSearch'])->name('moradores.search');
+    
 });
 
 Route::prefix('encomendas')->group(function () {
@@ -57,4 +58,12 @@ Route::prefix('encomendas')->group(function () {
     Route::put('/{id}/edit', [EncomendasController::class, 'encomendasEdit'])->name('encomendas.edit');
     Route::delete('/{id}', [EncomendasController::class, 'encomendasDelete'])->name('encomendas.delete');
     Route::get('/search', [EncomendasController::class, 'encomendaSearch'])->name('encomendas.search');
+    
+});
+
+Route::prefix('config')->group(function () {
+    Route::get('/', [App\Http\Controllers\Config::class, 'index'])->name('config.index');
+    Route::post('/origem/store', [App\Http\Controllers\Config::class, 'origemStore'])->name('config.origem.store');
+    Route::put('/origem/{id}', [App\Http\Controllers\Config::class, 'origemUpdate'])->name('config.origem.update');
+    Route::delete('/origem/{id}', [App\Http\Controllers\Config::class, 'origemDelete'])->name('config.origem.delete');
 });
