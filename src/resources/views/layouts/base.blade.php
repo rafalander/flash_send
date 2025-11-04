@@ -178,13 +178,13 @@
 
   <!-- Navbar -->
   <header class="text-bg-dark w-100">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 px-2">
+    <div class="d-flex align-items-center justify-content-between w-100 px-2">
       <a href="/" class="d-flex align-items-center text-white text-decoration-none">
         <img src="{{ asset('images/icons/newlogo.png') }}" alt="Logo" class="logo">
       </a>
-      <div class="text-end">
-        {{-- Mantendo a div porque provavelmente vou colocar alguma feature no lugar --}}
-      </div>
+      <a href="{{ route('config.index') }}" class="text-white text-decoration-none">
+        <i class="bi bi-gear-fill me-1"></i>Config
+      </a>
     </div>
   </header>
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Encomenda;
 use App\Models\Morador;
 use App\Models\Apartamento;
+use App\Models\Origem;
 
 class EncomendasController extends Controller
 {
@@ -43,7 +44,8 @@ class EncomendasController extends Controller
         }
 
         $moradores = Morador::with(['apartamento.torre.bloco'])->get();
-        return view('pages.encomendas.create', compact('moradores'));
+        $origens = Origem::where('ativo', true)->orderBy('nome_origem')->get();
+        return view('pages.encomendas.create', compact('moradores', 'origens'));
     }
 
     public function encomendasEdit(Request $request, $id)

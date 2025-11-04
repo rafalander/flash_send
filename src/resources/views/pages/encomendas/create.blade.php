@@ -73,15 +73,20 @@
 				<div class="row g-3 mt-1">
 					<div class="col-md-6">
 						<label for="origem" class="form-label">Origem</label>
-						<input
-							type="text"
+						<select
 							name="origem"
 							id="origem"
-							class="form-control @error('origem') is-invalid @enderror"
-							value="{{ old('origem') }}"
-							maxlength="150"
-							placeholder="Ex.: Loja, remetente, transportadora"
+							class="form-select @error('origem') is-invalid @enderror"
 						>
+							<option value="">Selecione uma origem (opcional)</option>
+							@isset($origens)
+								@foreach($origens as $origem)
+									<option value="{{ $origem->nome_origem }}" {{ old('origem') === $origem->nome_origem ? 'selected' : '' }}>
+										{{ $origem->nome_origem }}
+									</option>
+								@endforeach
+							@endisset
+						</select>
 						@error('origem')
 							<div class="invalid-feedback">{{ $message }}</div>
 						@enderror
