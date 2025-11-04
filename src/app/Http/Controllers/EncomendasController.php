@@ -14,7 +14,8 @@ class EncomendasController extends Controller
     {
         $encomendas = Encomenda::with(['morador.apartamento.torre.bloco'])->paginate(15);
         $moradores = Morador::with(['apartamento.torre.bloco'])->get();
-        return view('pages.encomendas.index', compact('encomendas', 'moradores'));
+        $origens = Origem::where('ativo', true)->orderBy('nome_origem')->get();
+        return view('pages.encomendas.index', compact('encomendas', 'moradores', 'origens'));
     }
 
     public function encomendasCreate(Request $request)

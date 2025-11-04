@@ -183,7 +183,7 @@
         <img src="{{ asset('images/icons/newlogo.png') }}" alt="Logo" class="logo">
       </a>
       <a href="{{ route('config.index') }}" class="text-white text-decoration-none">
-        <i class="bi bi-gear-fill me-1"></i>Config
+        <i class="bi bi-gear-fill me-1 ms-1"></i>Configurações
       </a>
     </div>
   </header>
