@@ -33,28 +33,42 @@
     }
 </style>
 
-<div class="container">
-  <h2 class="mb-4">Encomendas</h2>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Encomendas</h2>
+    </div>
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNovaEncomenda">
-        <i class="bi bi-plus-circle me-1"></i> Nova Encomenda
-    </button>
-    <x-count 
-      :total="$encomendas->total()" 
-      label="Total:" 
-    />
-  </div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Gerenciamento de Encomendas</h5>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalNovaEncomenda">
+                <i class="bi bi-plus-circle me-1"></i> Nova Encomenda
+            </button>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Gerencie as encomendas do condomínio.</p>
+            
+            <!-- Barra de Busca e Contador -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <x-search
+                        :action="route('encomendas.search')" 
+                        placeholder="Buscar encomenda..."
+                    />
+                </div>
+                <div class="col-md-4 text-end">
+                    <x-count 
+                        :total="$encomendas->total()" 
+                        label="Total:" 
+                    />
+                </div>
+            </div>
 
-  <x-search
-    :action="route('encomendas.search')" 
-    placeholder="Buscar encomenda..."
-  />
-
-  <ul class="list-group">
-    @foreach($encomendas as $encomenda)
-      <li class="list-group-item encomenda-item {{ $encomenda->retirada ? 'encomenda-retirada' : '' }}" id="encomenda-item-{{ $encomenda->id }}">
-        <div class="row g-2 align-items-center">
+            <!-- Lista de Encomendas -->
+            <ul class="list-group">
+                @foreach($encomendas as $encomenda)
+                <li class="list-group-item encomenda-item {{ $encomenda->retirada ? 'encomenda-retirada' : '' }}" id="encomenda-item-{{ $encomenda->id }}">
+                    <div class="row g-2 align-items-center">
           
           <!-- Coluna Principal: Morador e Apartamento (DESTAQUE) -->
           <div class="col-md-3">
@@ -146,14 +160,17 @@
             </div>
           </div>
 
-        </div>
-      </li>
-    @endforeach
-  </ul>
+                    </div>
+                </li>
+                @endforeach
+            </ul>
 
-  <div class="mt-3">
-      <x-pagination :paginator="$encomendas" :summary="false" align="center" />
-  </div>
+            <!-- Paginação -->
+            <div class="mt-3">
+                <x-pagination :paginator="$encomendas" :summary="false" align="center" />
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Nova Encomenda -->
