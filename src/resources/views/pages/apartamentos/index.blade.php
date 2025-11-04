@@ -1,6 +1,33 @@
 @extends('layouts.base')
 @section('title', 'Apartamentos')
 @section('content')
+
+<style>
+    .apartamento-item {
+        transition: background-color 0.3s ease;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #e9ecef !important;
+    }
+    .apartamento-item:hover {
+        background-color: #f8f9fa;
+    }
+    .info-destaque {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #2c3e50;
+        line-height: 1.2;
+    }
+    .info-secundaria {
+        font-size: 0.85rem;
+        color: #6c757d;
+        line-height: 1.3;
+    }
+    .list-group-item {
+        padding: 0.75rem 1rem;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Apartamentos</h2>
@@ -32,50 +59,81 @@
                 </div>
             </div>
 
-            <!-- Tabela de Apartamentos -->
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Número</th>
-                            <th>Torre</th>
-                            <th>Bloco</th>
-                            <th class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($apartamentos as $apartamento)
-                        <tr>
-                            <td>{{ $apartamento->id }}</td>
-                            <td>{{ $apartamento->numero }}</td>
-                            <td>{{ $apartamento->torre->nome ?? '—' }}</td>
-                            <td>{{ optional($apartamento->torre)->bloco->nome ?? '—' }}</td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-primary" 
-                                        title="Editar"
+                <!-- Lista de Apartamentos -->
+                <ul class="list-group">
+                    @forelse($apartamentos as $apartamento)
+                    <li class="list-group-item apartamento-item">
+                        <div class="row g-2 align-items-center">
+                        
+                            <!-- Coluna: ID -->
+                            <div class="col-md-1">
+                                <div class="info-secundaria">
+                                    <i class="bi bi-hash text-muted me-1"></i>
+                                    <span class="info-destaque">{{ $apartamento->id }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Coluna: Número do Apartamento (DESTAQUE) -->
+                            <div class="col-md-3">
+                                <div class="mb-1">
+                                    <i class="bi bi-door-closed text-primary me-1"></i>
+                                    <span class="info-destaque">Apt {{ $apartamento->numero }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Coluna: Torre -->
+                            <div class="col-md-3">
+                                <div class="info-secundaria">
+                                    <i class="bi bi-building text-success me-1"></i>
+                                    {{ $apartamento->torre->nome ?? '—' }}
+                                </div>
+                            </div>
+
+                            <!-- Coluna: Bloco -->
+                            <div class="col-md-3">
+                                <div class="info-secundaria">
+                                    <i class="bi bi-grid-3x3 text-info me-1"></i>
+                                    {{ optional($apartamento->torre)->bloco->nome ?? '—' }}
+                                </div>
+                            </div>
+
+                            <!-- Coluna: Ações -->
+                            <div class="col-md-2 text-end">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-primary btn-sm"
                                         data-bs-toggle="modal" 
                                         data-bs-target="#modalEditarApartamento"
-                                        onclick="editarApartamento({{ $apartamento->id }}, '{{ addslashes($apartamento->numero) }}', {{ $apartamento->torre_id ?? 'null' }})">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <form action="{{ route('apartamentos.delete', $apartamento->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este apartamento?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
-                                        <i class="bi bi-trash"></i>
+                                        onclick="editarApartamento({{ $apartamento->id }}, '{{ addslashes($apartamento->numero) }}', {{ $apartamento->torre_id ?? 'null' }})"
+                                        title="Editar"
+                                    >
+                                        <i class="bi bi-pencil"></i>
                                     </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">Nenhum apartamento cadastrado</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+
+                                    <form
+                                        action="{{ route('apartamentos.delete', $apartamento->id) }}"
+                                        method="POST"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Tem certeza que deseja excluir este apartamento?')"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </li>
+                    @empty
+                    <li class="list-group-item text-center text-muted">
+                        Nenhum apartamento cadastrado
+                    </li>
+                    @endforelse
+                </ul>
 
             <!-- Paginação -->
             <div class="mt-3">
