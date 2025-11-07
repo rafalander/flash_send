@@ -8,6 +8,10 @@ use App\Http\Controllers\EncomendasController;
 use App\Http\Controllers\ApartamentosController;
 use App\Http\Controllers\HomeController;
 
+Route::get('/login', function() {
+    return view('auth.login');
+})->name('login');
+
 Route::redirect('/', 'home');
 
 Route::prefix('home')->group(function () {
