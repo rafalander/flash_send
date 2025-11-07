@@ -187,11 +187,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="cpf" class="form-label">CPF <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="cpf" name="cpf" required maxlength="14" placeholder="000.000.000-00">
+                        <input type="text" class="form-control" id="cpf" name="cpf" required maxlength="14" placeholder="000.000.000-00" data-mask="cpf">
                     </div>
                     <div class="mb-3">
                         <label for="telefone" class="form-label">Telefone</label>
-                        <input type="text" class="form-control" id="telefone" name="telefone" maxlength="20" placeholder="(00) 00000-0000">
+                        <input type="text" class="form-control" id="telefone" name="telefone" maxlength="20" placeholder="(00) 00000-0000" data-mask="telefone">
                     </div>
                     <div class="mb-3">
                         <label for="apartamento_id" class="form-label">Apartamento <span class="text-danger">*</span></label>
@@ -239,11 +239,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="edit_cpf" class="form-label">CPF <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="edit_cpf" name="cpf" required maxlength="14">
+                        <input type="text" class="form-control" id="edit_cpf" name="cpf" required maxlength="14" data-mask="cpf">
                     </div>
                     <div class="mb-3">
                         <label for="edit_telefone" class="form-label">Telefone</label>
-                        <input type="text" class="form-control" id="edit_telefone" name="telefone" maxlength="20">
+                        <input type="text" class="form-control" id="edit_telefone" name="telefone" maxlength="20" data-mask="telefone">
                     </div>
                     <div class="mb-3">
                         <label for="edit_apartamento_id" class="form-label">Apartamento <span class="text-danger">*</span></label>
@@ -279,7 +279,44 @@ function editarMorador(id, nome, email, cpf, telefone, apartamentoId) {
     document.getElementById('edit_cpf').value = cpf;
     document.getElementById('edit_telefone').value = telefone;
     document.getElementById('edit_apartamento_id').value = apartamentoId || '';
+    
+    // Aplicar máscaras nos valores preenchidos
+    if (window.Masks) {
+        const cpfInput = document.getElementById('edit_cpf');
+        const telefoneInput = document.getElementById('edit_telefone');
+        if (cpfInput && cpfInput.value) {
+            cpfInput.value = Masks.formatCPF(cpfInput.value);
+        }
+        if (telefoneInput && telefoneInput.value) {
+            telefoneInput.value = Masks.formatTelefone(telefoneInput.value);
+        }
+    }
 }
+
+// Aplicar máscaras quando os modais forem abertos
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal de novo morador
+    const modalNovo = document.getElementById('modalNovoMorador');
+    if (modalNovo) {
+        modalNovo.addEventListener('shown.bs.modal', function() {
+            if (window.Masks) {
+                Masks.applyCPF('#cpf');
+                Masks.applyTelefone('#telefone');
+            }
+        });
+    }
+    
+    // Modal de editar morador
+    const modalEditar = document.getElementById('modalEditarMorador');
+    if (modalEditar) {
+        modalEditar.addEventListener('shown.bs.modal', function() {
+            if (window.Masks) {
+                Masks.applyCPF('#edit_cpf');
+                Masks.applyTelefone('#edit_telefone');
+            }
+        });
+    }
+});
 </script>
 
 @endsection
