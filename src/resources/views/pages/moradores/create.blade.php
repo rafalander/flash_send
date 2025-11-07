@@ -6,6 +6,15 @@
 			<h5 class="mb-0">Cadastrar Morador</h5>
 		</div>
 		<div class="card-body">
+			@if ($errors->any())
+				<div class="alert alert-danger">
+					<ul class="mb-0">
+						@foreach ($errors->all() as $error)
+							<li>{{ $error }}</li>
+						@endforeach
+					</ul>
+				</div>
+			@endif
 			<form action="{{ route('moradores.store') }}" method="POST" novalidate>
 				@csrf
 
@@ -54,6 +63,7 @@
 						required
 						maxlength="14"
 						placeholder="000.000.000-00"
+						data-mask="cpf"
 					>
 					@error('cpf')
 						<div class="invalid-feedback">{{ $message }}</div>
@@ -70,6 +80,7 @@
 						value="{{ old('telefone') }}"
 						maxlength="20"
 						placeholder="(00) 00000-0000"
+						data-mask="telefone"
 					>
 					@error('telefone')
 						<div class="invalid-feedback">{{ $message }}</div>

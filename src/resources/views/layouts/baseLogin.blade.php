@@ -37,9 +37,6 @@
         </div>
     </div>
     <div class="text-center text-muted py-3">
-        &copy; {{ date('Y') }} Flash Send. Todos os direitos reservados
-    </div>
-
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
