@@ -9,6 +9,9 @@
         value="{{ request('search') }}"
       >
       <button class="btn btn-outline-primary bi-search" type="submit"></button>
+      @if(request('search'))
+        <a href="{{ $action }}" class="btn btn-outline-secondary bi-x-circle" title="Limpar busca"></a>
+      @endif
     </div>
   </form>
 </div>

@@ -19,25 +19,72 @@ class MoradoresController extends Controller
     public function moradoresCreate(Request $request)
     {
         if ($request->isMethod('POST')) {
+            // Validação básica primeiro
             $request->validate([
                 'nome' => 'required|string|max:150',
                 'email' => 'required|email|max:150|unique:moradores,email',
-                'cpf' => 'required|string|max:14|unique:moradores,cpf',
-                'telefone' => 'nullable|string|max:20',
+                'cpf' => 'required|string',
+                'telefone' => 'nullable|string',
                 'apartamento_id' => 'required|exists:apartamentos,id',
             ]);
 
-            Morador::create([
-                'nome' => $request->input('nome'),
-                'email' => $request->input('email'),
-                'cpf' => $request->input('cpf'),
-                'telefone' => $request->input('telefone'),
-                'apartamento_id' => $request->input('apartamento_id'),
-            ]);
+            // Normalizar CPF e telefone após validação básica
+            $cpfNormalizado = $this->normalizeCpf($request->input('cpf'));
+            $telefoneNormalizado = $this->normalizeTelefone($request->input('telefone'));
 
-            return redirect()
-                ->route('moradores.index')
-                ->with('flasher', toastr()->success('Morador criado com sucesso'));
+            // Validações customizadas
+            if (empty($cpfNormalizado) || strlen($cpfNormalizado) !== 11) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['cpf' => 'O CPF deve conter 11 dígitos.']);
+            }
+
+            if (!$this->validarCpf($cpfNormalizado)) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['cpf' => 'O CPF informado é inválido.']);
+            }
+
+            if ($telefoneNormalizado && !$this->validarTelefone($telefoneNormalizado)) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['telefone' => 'O telefone deve conter 10 ou 11 dígitos.']);
+            }
+
+            // Verificar se CPF já existe (normalizando CPFs do banco também)
+            $cpfExiste = Morador::all()->filter(function($morador) use ($cpfNormalizado) {
+                $cpfBanco = $this->normalizeCpf($morador->cpf);
+                return $cpfBanco === $cpfNormalizado;
+            })->isNotEmpty();
+            
+            if ($cpfExiste) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['cpf' => 'Este CPF já está cadastrado.']);
+            }
+
+            try {
+                Morador::create([
+                    'nome' => $request->input('nome'),
+                    'email' => $request->input('email'),
+                    'cpf' => $cpfNormalizado,
+                    'telefone' => $telefoneNormalizado,
+                    'apartamento_id' => $request->input('apartamento_id'),
+                ]);
+
+                return redirect()
+                    ->route('moradores.index')
+                    ->with('flasher', toastr()->success('Morador criado com sucesso'));
+            } catch (\Exception $e) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['error' => 'Erro ao cadastrar morador: ' . $e->getMessage()]);
+            }
         }
 
         $apartamentos = Apartamento::with(['torre.bloco'])->get();
@@ -54,19 +101,59 @@ class MoradoresController extends Controller
         }
 
         if ($request->isMethod('PUT')) {
+            // Validação básica primeiro
             $request->validate([
                 'nome' => 'required|string|max:150',
                 'email' => 'required|email|max:150|unique:moradores,email,' . $id,
-                'cpf' => 'required|string|max:14|unique:moradores,cpf,' . $id,
-                'telefone' => 'nullable|string|max:20',
+                'cpf' => 'required|string',
+                'telefone' => 'nullable|string',
                 'apartamento_id' => 'required|exists:apartamentos,id',
             ]);
+
+            // Normalizar CPF e telefone após validação básica
+            $cpfNormalizado = $this->normalizeCpf($request->input('cpf'));
+            $telefoneNormalizado = $this->normalizeTelefone($request->input('telefone'));
+
+            // Validações customizadas
+            if (empty($cpfNormalizado) || strlen($cpfNormalizado) !== 11) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['cpf' => 'O CPF deve conter 11 dígitos.']);
+            }
+
+            if (!$this->validarCpf($cpfNormalizado)) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['cpf' => 'O CPF informado é inválido.']);
+            }
+
+            if ($telefoneNormalizado && !$this->validarTelefone($telefoneNormalizado)) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['telefone' => 'O telefone deve conter 10 ou 11 dígitos.']);
+            }
+
+            // Verificar se CPF já existe (exceto para o próprio registro, normalizando CPFs do banco também)
+            $cpfExiste = Morador::where('id', '!=', $id)->get()->filter(function($morador) use ($cpfNormalizado) {
+                $cpfBanco = $this->normalizeCpf($morador->cpf);
+                return $cpfBanco === $cpfNormalizado;
+            })->isNotEmpty();
+            
+            if ($cpfExiste) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['cpf' => 'Este CPF já está cadastrado.']);
+            }
 
             $morador->update([
                 'nome' => $request->input('nome'),
                 'email' => $request->input('email'),
-                'cpf' => $request->input('cpf'),
-                'telefone' => $request->input('telefone'),
+                'cpf' => $cpfNormalizado,
+                'telefone' => $telefoneNormalizado,
                 'apartamento_id' => $request->input('apartamento_id'),
             ]);
 
@@ -154,9 +241,16 @@ class MoradoresController extends Controller
 
             $cpfDigits = $this->normalizeCpf($cpf);
             if (strlen($cpfDigits) !== 11) {
-                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": CPF inválido ({$cpf}).";
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": CPF deve conter 11 dígitos ({$cpf}).";
                 continue;
             }
+            
+            // Validar CPF com dígitos verificadores
+            if (!$this->validarCpf($cpfDigits)) {
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": CPF inválido (dígitos verificadores incorretos) ({$cpf}).";
+                continue;
+            }
+            
             if (in_array($cpfDigits, $cpfsNoArquivo)) {
                 $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": CPF duplicado no próprio arquivo ({$cpf}).";
                 continue;
@@ -179,11 +273,30 @@ class MoradoresController extends Controller
                 $apartamento_id = (int) $apartamento_id_raw;
             }
 
-            if (Morador::where('email', $email)->exists()) {
+            // Validar telefone se fornecido
+            $telefoneNormalizado = $this->normalizeTelefone($telefone);
+            if ($telefoneNormalizado && !$this->validarTelefone($telefoneNormalizado)) {
+                $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": telefone inválido (deve conter 10 ou 11 dígitos) ({$telefone}).";
+                continue;
+            }
+
+            // Verificar se e-mail já existe no banco (normalizando também os do banco)
+            $emailExiste = Morador::all()->filter(function($morador) use ($email) {
+                return strtolower($morador->email) === strtolower($email);
+            })->isNotEmpty();
+            
+            if ($emailExiste) {
                 $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": e-mail já cadastrado no banco ({$email}).";
                 continue;
             }
-            if (Morador::where('cpf', $cpfDigits)->exists()) {
+            
+            // Verificar se CPF já existe no banco (normalizando também os do banco)
+            $cpfExiste = Morador::all()->filter(function($morador) use ($cpfDigits) {
+                $cpfBanco = $this->normalizeCpf($morador->cpf);
+                return $cpfBanco === $cpfDigits;
+            })->isNotEmpty();
+            
+            if ($cpfExiste) {
                 $erros[] = "Linha " . ($hasHeader ? ($index + 1) : ($index + 2)) . ": CPF já cadastrado no banco ({$cpf}).";
                 continue;
             }
@@ -192,7 +305,7 @@ class MoradoresController extends Controller
                 'nome' => $nome,
                 'email' => $email,
                 'cpf' => $cpfDigits,
-                'telefone' => $telefone,
+                'telefone' => $telefoneNormalizado,
                 'apartamento_id' => $apartamento_id,
             ]);
 
@@ -235,6 +348,68 @@ class MoradoresController extends Controller
     private function normalizeCpf($cpf)
     {
         return preg_replace('/\D+/', '', (string) $cpf);
+    }
+
+    private function normalizeTelefone($telefone)
+    {
+        if (empty($telefone)) {
+            return null;
+        }
+        return preg_replace('/\D+/', '', (string) $telefone);
+    }
+
+    private function validarCpf($cpf)
+    {
+        $cpf = preg_replace('/\D+/', '', $cpf);
+        
+        // Verifica se tem 11 dígitos
+        if (strlen($cpf) != 11) {
+            return false;
+        }
+        
+        // Verifica se todos os dígitos são iguais (CPF inválido)
+        if (preg_match('/(\d)\1{10}/', $cpf)) {
+            return false;
+        }
+        
+        // Validação do primeiro dígito verificador
+        $soma = 0;
+        for ($i = 0; $i < 9; $i++) {
+            $soma += intval($cpf[$i]) * (10 - $i);
+        }
+        $resto = $soma % 11;
+        $digito1 = ($resto < 2) ? 0 : 11 - $resto;
+        
+        if (intval($cpf[9]) != $digito1) {
+            return false;
+        }
+        
+        // Validação do segundo dígito verificador
+        $soma = 0;
+        for ($i = 0; $i < 10; $i++) {
+            $soma += intval($cpf[$i]) * (11 - $i);
+        }
+        $resto = $soma % 11;
+        $digito2 = ($resto < 2) ? 0 : 11 - $resto;
+        
+        if (intval($cpf[10]) != $digito2) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    private function validarTelefone($telefone)
+    {
+        if (empty($telefone)) {
+            return true; // Telefone é opcional
+        }
+        
+        $telefone = preg_replace('/\D+/', '', $telefone);
+        $tamanho = strlen($telefone);
+        
+        // Telefone deve ter 10 dígitos (fixo) ou 11 dígitos (celular)
+        return $tamanho == 10 || $tamanho == 11;
     }
 
     private function buildErrorSummary(int $importados, array $erros)

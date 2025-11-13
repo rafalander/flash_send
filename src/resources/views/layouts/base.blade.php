@@ -3,6 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Aplicar tema escuro ANTES de qualquer CSS para evitar flash -->
+  <script>
+    (function() {
+      const DARK_MODE_KEY = 'darkMode';
+      try {
+        const saved = localStorage.getItem(DARK_MODE_KEY);
+        if (saved === "1") {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          // Aplicar cor do footer imediatamente se possível
+          document.addEventListener('DOMContentLoaded', function() {
+            const footer = document.querySelector('footer');
+            if (footer) {
+              const footerDiv = footer.querySelector('div');
+              if (footerDiv && footerDiv.hasAttribute('style')) {
+                const currentStyle = footerDiv.getAttribute('style');
+                const newStyle = currentStyle.replace(/color\s*:\s*[^;]+;?/gi, '');
+                footerDiv.setAttribute('style', newStyle);
+                footerDiv.style.color = 'var(--footer-text)';
+              }
+            }
+          });
+        }
+      } catch(e) {}
+    })();
+  </script>
   <link rel="icon" class="favicon" href="{{ asset('images/icons/favicon.png') }}" type="image/png" />
   <title>@yield('title', 'Flash Send')</title>
 
@@ -182,9 +207,12 @@
       <a href="/" class="d-flex align-items-center text-white text-decoration-none">
         <img src="{{ asset('images/icons/newlogo.png') }}" alt="Logo" class="logo">
       </a>
-      <a href="{{ route('config.index') }}" class="text-white text-decoration-none">
-        <i class="bi bi-gear-fill me-1 ms-1"></i>Configurações
-      </a>
+      <div class="d-flex align-items-center gap-2">
+        @include('components.darkMode')
+        <a href="{{ route('config.index') }}" class="text-white text-decoration-none">
+          <i class="bi bi-gear-fill me-1 ms-1"></i>Configurações
+        </a>
+      </div>
     </div>
   </header>
 
@@ -233,6 +261,9 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Utilitários de Máscara -->
+  <script src="{{ asset('js/masks.js') }}"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
