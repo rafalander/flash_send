@@ -36,7 +36,12 @@
             </div>
         </div>
     </div>
-    <div class="text-center text-muted py-3">
+
+    <footer class="p-1 text-bg-light">
+        <div class="p-2 text-center" style="font-size: 0.75rem; color: hsl(60, 1%, 41%);">
+            &copy; {{ date('Y') }} Flash Send
+        </div>
+    </footer>
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
