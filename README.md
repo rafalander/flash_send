@@ -92,7 +92,7 @@ http://localhost:8080
 
 - Entrar no container PHP:
 ```bash
-docker compose exec app bash
+docker exec -it (nome_do_app) bash
 ```
 - Ver logs de todos os serviços:
 ```bash
