@@ -19,6 +19,11 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios" type="button" role="tab">
+                <i class="bi bi-person-circle me-1"></i> Usuarios
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="origem-tab" data-bs-toggle="tab" data-bs-target="#origem" type="button" role="tab">
                 <i class="bi bi-pin-map me-1"></i> Origem
             </button>
@@ -172,8 +177,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Atualizar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </form>
         </div>
@@ -188,6 +193,39 @@ function editarOrigem(id, nome, ativo) {
     document.getElementById('edit_nome').value = nome;
     document.getElementById('edit_status').checked = ativo;
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const storageKey = 'config-active-tab';
+    const tabButtons = Array.from(document.querySelectorAll('#configTabs button[data-bs-toggle="tab"]'));
+
+    function activateTab(selector) {
+        if (!selector) return;
+        
+        const btn = document.querySelector(`#configTabs button[data-bs-target="${selector}"]`);
+        if (btn) {
+            const tab = bootstrap.Tab.getOrCreateInstance(btn);
+            tab.show();
+        }
+    }
+
+    const hash = window.location.hash;
+    if (hash) {
+        activateTab(hash);
+    } else {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) activateTab(saved);
+    }
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('shown.bs.tab', function (e) {
+            const target = e.target.getAttribute('data-bs-target');
+            if (target) {
+                localStorage.setItem(storageKey, target);
+                history.replaceState(null, '', target);
+            }
+        });
+    });
+});
 </script>
 
 @endsection
