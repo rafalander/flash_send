@@ -19,6 +19,11 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios" type="button" role="tab">
+                <i class="bi bi-person-circle me-1"></i> Usuarios
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="origem-tab" data-bs-toggle="tab" data-bs-target="#origem" type="button" role="tab">
                 <i class="bi bi-pin-map me-1"></i> Origem
             </button>
