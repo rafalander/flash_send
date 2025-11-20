@@ -193,6 +193,41 @@ function editarOrigem(id, nome, ativo) {
     document.getElementById('edit_nome').value = nome;
     document.getElementById('edit_status').checked = ativo;
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const storageKey = 'config-active-tab';
+    const tabButtons = Array.from(document.querySelectorAll('#configTabs button[data-bs-toggle="tab"]'));
+
+    function activateTab(selector) {
+        if (!selector) return;
+        // selector should be like "#origem"
+        const btn = document.querySelector(`#configTabs button[data-bs-target="${selector}"]`);
+        if (btn) {
+            const tab = bootstrap.Tab.getOrCreateInstance(btn);
+            tab.show();
+        }
+    }
+
+    // On load: prefer URL hash, otherwise use saved value
+    const hash = window.location.hash;
+    if (hash) {
+        activateTab(hash);
+    } else {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) activateTab(saved);
+    }
+
+    // When a tab becomes active, save it and update the URL hash without scrolling
+    tabButtons.forEach(btn => {
+        btn.addEventListener('shown.bs.tab', function (e) {
+            const target = e.target.getAttribute('data-bs-target');
+            if (target) {
+                localStorage.setItem(storageKey, target);
+                history.replaceState(null, '', target);
+            }
+        });
+    });
+});
 </script>
 
 @endsection
