@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function activateTab(selector) {
         if (!selector) return;
-        // selector should be like "#origem"
+        
         const btn = document.querySelector(`#configTabs button[data-bs-target="${selector}"]`);
         if (btn) {
             const tab = bootstrap.Tab.getOrCreateInstance(btn);
@@ -208,7 +208,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // On load: prefer URL hash, otherwise use saved value
     const hash = window.location.hash;
     if (hash) {
         activateTab(hash);
@@ -217,7 +216,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (saved) activateTab(saved);
     }
 
-    // When a tab becomes active, save it and update the URL hash without scrolling
     tabButtons.forEach(btn => {
         btn.addEventListener('shown.bs.tab', function (e) {
             const target = e.target.getAttribute('data-bs-target');
