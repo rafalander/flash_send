@@ -5,14 +5,36 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Origem;
 use App\Models\Usuario;
+use App\Models\Tipo;
 
 class Config extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $origens = Origem::orderBy('created_at', 'desc')->get();
-        $usuarios = Usuario::with('morador')->orderBy('created_at', 'desc')->get();
-        return view('pages.configuracoes.config', compact('origens', 'usuarios'));
+        $tipos = Tipo::orderBy('nome', 'asc')->get();
+        
+        $searchTerm = $request->input('search');
+        
+        if ($searchTerm) {
+            $usuarios = Usuario::with('morador')
+                ->where(function ($q) use ($searchTerm) {
+                    $q->where('nome', 'like', "%{$searchTerm}%")
+                      ->orWhere('email', 'like', "%{$searchTerm}%")
+                      ->orWhere('cpf', 'like', "%{$searchTerm}%")
+                      ->orWhere('telefone', 'like', "%{$searchTerm}%")
+                      ->orWhere('tipo', 'like', "%{$searchTerm}%");
+                })
+                ->orWhereHas('morador', function ($query) use ($searchTerm) {
+                    $query->where('nome', 'like', "%{$searchTerm}%");
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            $usuarios = Usuario::with('morador')->orderBy('created_at', 'desc')->get();
+        }
+        
+        return view('pages.configuracoes.config', compact('origens', 'usuarios', 'tipos'));
     }
 
     public function origemStore(Request $request)

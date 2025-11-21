@@ -128,6 +128,16 @@
                 <div class="card-body">
                     <p class="text-muted">Lista de todos os usuários do sistema.</p>
                     
+                    <!-- Barra de Busca -->
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <x-search
+                                :action="route('config.index')" 
+                                placeholder="Buscar usuário..."
+                            />
+                        </div>
+                    </div>
+                    
                     <!-- Tabela de Usuários -->
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -192,7 +202,7 @@
                                                 title="Editar"
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#modalEditarUsuario"
-                                                onclick="editarUsuario({{ $usuario->id }}, '{{ $usuario->nome }}', '{{ $usuario->email }}', '{{ $usuario->cpf }}', '{{ $usuario->telefone ?? '' }}', '{{ $usuario->type }}')">
+                                                onclick="editarUsuario({{ $usuario->id }}, '{{ $usuario->nome }}', '{{ $usuario->email }}', '{{ $usuario->cpf }}', '{{ $usuario->telefone ?? '' }}', '{{ $usuario->tipo }}')">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <form action="{{ route('usuarios.delete', $usuario->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?')">
@@ -311,11 +321,12 @@
                         <input type="text" class="form-control" id="edit_usuario_telefone" name="telefone" maxlength="20" data-mask="telefone">
                     </div>
                     <div class="mb-3">
-                        <label for="edit_usuario_type" class="form-label">Tipo <span class="text-danger">*</span></label>
-                        <select class="form-select" id="edit_usuario_type" name="tipo" required>
-                            <option value="morador">Morador</option>
-                            <option value="admin">Admin</option>
-                            <option value="portaria">Portaria</option>
+                        <label for="edit_usuario_tipo" class="form-label">Tipo <span class="text-danger">*</span></label>
+                        <select class="form-select" id="edit_usuario_tipo" name="tipo" required>
+                            <option value="">Selecione um tipo</option>
+                            @foreach($tipos as $tipo)
+                                <option value="{{ $tipo->nome }}">{{ $tipo->nome }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -329,7 +340,7 @@
 </div>
 
 <script>
-function editarUsuario(id, nome, email, cpf, telefone, type) {
+function editarUsuario(id, nome, email, cpf, telefone, tipo) {
     const form = document.getElementById('formEditarUsuario');
     form.action = `/usuarios/${id}`;
     
@@ -352,7 +363,8 @@ function editarUsuario(id, nome, email, cpf, telefone, type) {
         telefoneInput.value = telefone || '';
     }
     
-    document.getElementById('edit_usuario_type').value = type;
+    // Selecionar o tipo correto no select
+    document.getElementById('edit_usuario_tipo').value = tipo;
 }
 
 function editarOrigem(id, nome, ativo) {
