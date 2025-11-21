@@ -28,7 +28,7 @@ class OrigemSeeder extends Seeder
             'Outro'
         ];
         
-        if (Origem::count() == 0) {
+        if (Origem::count() == 0){
             foreach ($origens as $origem) {
                 Origem::create([
                     'nome_origem' => $origem,
