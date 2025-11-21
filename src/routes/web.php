@@ -7,7 +7,7 @@ use App\Http\Controllers\MoradoresController;
 use App\Http\Controllers\EncomendasController;
 use App\Http\Controllers\ApartamentosController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\UsuariosController;
 
 Route::get('/login', function() {
     return view('auth.login');
@@ -74,6 +74,6 @@ Route::prefix('config')->group(function () {
 });
 
 Route::prefix('usuarios')->group(function () {
-    Route::put('/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
-    Route::delete('/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.delete');
+    Route::put('/{id}', [UsuariosController::class, 'update'])->name('usuarios.update');
+    Route::delete('/{id}', [UsuariosController::class, 'destroy'])->name('usuarios.delete');
 });

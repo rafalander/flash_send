@@ -312,7 +312,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="edit_usuario_type" class="form-label">Tipo <span class="text-danger">*</span></label>
-                        <select class="form-select" id="edit_usuario_type" name="type" required>
+                        <select class="form-select" id="edit_usuario_type" name="tipo" required>
                             <option value="morador">Morador</option>
                             <option value="admin">Admin</option>
                             <option value="portaria">Portaria</option>

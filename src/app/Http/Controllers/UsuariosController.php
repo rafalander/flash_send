@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 
-class UsuarioController extends Controller
+class UsuariosController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -70,7 +70,7 @@ class UsuarioController extends Controller
             'email' => $request->input('email'),
             'cpf' => $cpfNormalizado,
             'telefone' => $telefoneNormalizado,
-            'tipo' => $request->input('type'),
+            'tipo' => $request->input('tipo'),
         ]);
 
         return redirect()->route('config.index')->with('flasher', toastr()->success('Usuário atualizado com sucesso'));
