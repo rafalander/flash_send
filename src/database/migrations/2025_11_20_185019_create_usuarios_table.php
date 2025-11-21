@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('nome');
             $table->string('email');
             $table->string('senha');
-            $table->string('telefone');
+            $table->string('telefone')->nullable();
             $table->string('cpf');
             $table->foreignId('morador_id')->constrained('moradores')->onDelete('cascade');
-            $table->string('type');
+            $table->string('tipo');
             $table->timestamps();
         });
     }

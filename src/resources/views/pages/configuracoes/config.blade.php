@@ -119,6 +119,103 @@
             </div>
         </div>
 
+        <!-- Aba Usuários -->
+        <div class="tab-pane fade" id="usuarios" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Gerenciamento de Usuários</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Lista de todos os usuários do sistema.</p>
+                    
+                    <!-- Tabela de Usuários -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>CPF</th>
+                                    <th>Telefone</th>
+                                    <th>Tipo</th>
+                                    <th>Morador</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($usuarios as $usuario)
+                                <tr>
+                                    <td>{{ $usuario->id }}</td>
+                                    <td>{{ $usuario->nome }}</td>
+                                    <td>{{ $usuario->email }}</td>
+                                    <td>
+                                        @php
+                                            $cpfDigits = preg_replace('/\D/', '', $usuario->cpf);
+                                            if(strlen($cpfDigits) == 11) {
+                                                echo preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $cpfDigits);
+                                            } else {
+                                                echo $usuario->cpf;
+                                            }
+                                        @endphp
+                                    </td>
+                                    <td>
+                                        @if($usuario->telefone)
+                                            @php
+                                                $tel = preg_replace('/\D/', '', $usuario->telefone);
+                                                if(strlen($tel) == 11) {
+                                                    echo preg_replace('/(\d{2})(\d{5})(\d{4})/', '($1) $2-$3', $tel);
+                                                } elseif(strlen($tel) == 10) {
+                                                    echo preg_replace('/(\d{2})(\d{4})(\d{4})/', '($1) $2-$3', $tel);
+                                                } else {
+                                                    echo $usuario->telefone;
+                                                }
+                                            @endphp
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ ucfirst($usuario->tipo) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if($usuario->morador)
+                                            <span class="badge bg-success">Sim</span>
+                                        @else
+                                            <span class="badge bg-secondary">Não</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                title="Editar"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#modalEditarUsuario"
+                                                onclick="editarUsuario({{ $usuario->id }}, '{{ $usuario->nome }}', '{{ $usuario->email }}', '{{ $usuario->cpf }}', '{{ $usuario->telefone ?? '' }}', '{{ $usuario->type }}')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <form action="{{ route('usuarios.delete', $usuario->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">Nenhum usuário cadastrado</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -185,7 +282,79 @@
     </div>
 </div>
 
+<!-- Modal Editar Usuário -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarUsuarioLabel">Editar Usuário</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarUsuario" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_usuario_nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="edit_usuario_nome" name="nome" required maxlength="150">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_usuario_email" class="form-label">E-mail <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="edit_usuario_email" name="email" required maxlength="150">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_usuario_cpf" class="form-label">CPF <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="edit_usuario_cpf" name="cpf" required maxlength="14" data-mask="cpf">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_usuario_telefone" class="form-label">Telefone</label>
+                        <input type="text" class="form-control" id="edit_usuario_telefone" name="telefone" maxlength="20" data-mask="telefone">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_usuario_type" class="form-label">Tipo <span class="text-danger">*</span></label>
+                        <select class="form-select" id="edit_usuario_type" name="type" required>
+                            <option value="morador">Morador</option>
+                            <option value="admin">Admin</option>
+                            <option value="portaria">Portaria</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+function editarUsuario(id, nome, email, cpf, telefone, type) {
+    const form = document.getElementById('formEditarUsuario');
+    form.action = `/usuarios/${id}`;
+    
+    document.getElementById('edit_usuario_nome').value = nome;
+    document.getElementById('edit_usuario_email').value = email;
+    
+    // Formatar CPF antes de preencher
+    const cpfInput = document.getElementById('edit_usuario_cpf');
+    if (window.Masks && cpf) {
+        cpfInput.value = Masks.formatCPF(cpf);
+    } else {
+        cpfInput.value = cpf;
+    }
+    
+    // Formatar telefone antes de preencher
+    const telefoneInput = document.getElementById('edit_usuario_telefone');
+    if (window.Masks && telefone) {
+        telefoneInput.value = Masks.formatTelefone(telefone);
+    } else {
+        telefoneInput.value = telefone || '';
+    }
+    
+    document.getElementById('edit_usuario_type').value = type;
+}
+
 function editarOrigem(id, nome, ativo) {
     const form = document.getElementById('formEditarOrigem');
     form.action = `/config/origem/${id}`;
@@ -225,6 +394,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // Aplicar máscaras no modal de editar usuário
+    const modalEditarUsuario = document.getElementById('modalEditarUsuario');
+    if (modalEditarUsuario && window.Masks) {
+        modalEditarUsuario.addEventListener('shown.bs.modal', function() {
+            Masks.applyCPF('#edit_usuario_cpf');
+            Masks.applyTelefone('#edit_usuario_telefone');
+        });
+    }
 });
 </script>
 

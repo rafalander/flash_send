@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Morador;
 use App\Models\Apartamento;
+use App\Models\Usuario;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MoradoresController extends Controller
@@ -68,12 +70,23 @@ class MoradoresController extends Controller
             }
 
             try {
-                Morador::create([
+                $morador = Morador::create([
                     'nome' => $request->input('nome'),
                     'email' => $request->input('email'),
                     'cpf' => $cpfNormalizado,
                     'telefone' => $telefoneNormalizado,
                     'apartamento_id' => $request->input('apartamento_id'),
+                ]);
+
+                // Criar usuário automaticamente para o morador
+                Usuario::create([
+                    'nome' => $morador->nome,
+                    'email' => $morador->email,
+                    'senha' => Hash::make($cpfNormalizado), // Senha inicial: CPF
+                    'telefone' => $telefoneNormalizado,
+                    'cpf' => $cpfNormalizado,
+                    'morador_id' => $morador->id,
+                    'tipo' => 'morador',
                 ]);
 
                 return redirect()
@@ -156,6 +169,17 @@ class MoradoresController extends Controller
                 'telefone' => $telefoneNormalizado,
                 'apartamento_id' => $request->input('apartamento_id'),
             ]);
+
+            // Atualizar usuário associado se existir
+            $usuario = Usuario::where('morador_id', $morador->id)->first();
+            if ($usuario) {
+                $usuario->update([
+                    'nome' => $morador->nome,
+                    'email' => $morador->email,
+                    'telefone' => $telefoneNormalizado,
+                    'cpf' => $cpfNormalizado,
+                ]);
+            }
 
             return redirect()
                 ->route('moradores.index')
@@ -301,12 +325,23 @@ class MoradoresController extends Controller
                 continue;
             }
 
-            Morador::create([
+            $morador = Morador::create([
                 'nome' => $nome,
                 'email' => $email,
                 'cpf' => $cpfDigits,
                 'telefone' => $telefoneNormalizado,
                 'apartamento_id' => $apartamento_id,
+            ]);
+
+            // Criar usuário automaticamente para o morador
+            Usuario::create([
+                'nome' => $morador->nome,
+                'email' => $morador->email,
+                'senha' => Hash::make($cpfDigits), // Senha inicial: CPF
+                'telefone' => $telefoneNormalizado,
+                'cpf' => $cpfDigits,
+                'morador_id' => $morador->id,
+                'tipo' => 'morador',
             ]);
 
             $importados++;
