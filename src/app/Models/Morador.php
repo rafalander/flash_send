@@ -23,4 +23,8 @@ class Morador extends Model
     public function encomendas() {
         return $this->hasMany(Encomenda::class);
     }
+
+    public function usuario() {
+        return $this->hasOne(Usuario::class);
+    }
 }

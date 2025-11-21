@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Origem;
+use App\Models\Usuario;
 
 class Config extends Controller
 {
     public function index()
     {
         $origens = Origem::orderBy('created_at', 'desc')->get();
-        return view('pages.configuracoes.config', compact('origens'));
+        $usuarios = Usuario::with('morador')->orderBy('created_at', 'desc')->get();
+        return view('pages.configuracoes.config', compact('origens', 'usuarios'));
     }
 
     public function origemStore(Request $request)
@@ -49,4 +51,5 @@ class Config extends Controller
 
         return redirect()->route('config.index')->with('flasher', toastr()->success('Origem deletada com sucesso'));
     }
+
 }

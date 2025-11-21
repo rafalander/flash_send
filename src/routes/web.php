@@ -7,6 +7,7 @@ use App\Http\Controllers\MoradoresController;
 use App\Http\Controllers\EncomendasController;
 use App\Http\Controllers\ApartamentosController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UsuariosController;
 
 Route::get('/login', function() {
     return view('auth.login');
@@ -70,4 +71,9 @@ Route::prefix('config')->group(function () {
     Route::post('/origem/store', [App\Http\Controllers\Config::class, 'origemStore'])->name('config.origem.store');
     Route::put('/origem/{id}', [App\Http\Controllers\Config::class, 'origemUpdate'])->name('config.origem.update');
     Route::delete('/origem/{id}', [App\Http\Controllers\Config::class, 'origemDelete'])->name('config.origem.delete');
+});
+
+Route::prefix('usuarios')->group(function () {
+    Route::put('/{id}', [UsuariosController::class, 'update'])->name('usuarios.update');
+    Route::delete('/{id}', [UsuariosController::class, 'destroy'])->name('usuarios.delete');
 });
