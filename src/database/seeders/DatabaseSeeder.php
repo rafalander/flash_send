@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
 
         // chama os seeders adicionais
         $this->call([
-            RolesSeeder::class,
+            TipoSeeder::class,
+            OrigemSeeder::class,
         ]);
     }
 }
